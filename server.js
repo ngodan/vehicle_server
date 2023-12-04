@@ -19,9 +19,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/data', dataRoutes);
 
 // Serve images
+const currentDirectory = process.cwd();
 const imagePath = process.env.PATH_IMAGE.replace(/\\\\/g, '/');
 const imageDirectory = path.join(imagePath);
+const uploadFolderPath = path.join(currentDirectory, 'upload/default');
 app.use('/images', express.static(imageDirectory));
+app.use('/default', express.static(uploadFolderPath));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
@@ -47,7 +50,6 @@ db.once('open', async () => {
 
         const changed = { document: changedDocument, operationType: change.operationType };
         const result = await dataController.getDataStream(changed, null);
-        console.log(result)
         io.emit('dataUpdate', result);
       } else {
         console.log('Unsupported operation type:', change.operationType);

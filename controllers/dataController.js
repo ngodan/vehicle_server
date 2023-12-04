@@ -204,23 +204,39 @@ exports.getDataDefault = async (req, res) => {
 }
 exports.getAllDataReport = async (req, res) => {
   try {
-
-    const { fordCardID } = req.body;
+    const { fordCardID,fullName,cdsid,department,startDateTime,endDateTime } = req.body;
+    const resultArray = await searchAndGetCardIdByColumns(fullName,cdsid,department);
+    let fordCard = []
+    if(resultArray.length > 0 ) fordCard = resultArray;
+    if(fordCardID){
+      fordCard = []
+      fordCard[0] = fordCardID;
+    } 
     let query = {}
-    query.$or = [
-      {
-        Status: 'NOK',
-      },
-      {
-        Status: null,
-      },
-    ];
-    if (fordCardID) {
-      query.FordCardIDIn = fordCardID;
+    query.$or = [{Status: 'NOK',},{Status: null,},];
+    
+    if (fordCard.length>0) {
+      query.FordCardIDIn = { $in: fordCard };
     }
-    const result = await Data.find(query);
+    if (startDateTime && endDateTime) {
+      query.$or = [
+        {
+          DateTimeIn: { $gte: new Date(startDateTime), $lte: new Date(endDateTime) },
+        },
+        {
+          $and: [
+            { DateTimeOut: { $ne: null } },
+            { DateTimeOut: { $gte: new Date(startDateTime), $lte: new Date(endDateTime) } },
+          ],
+        },
+      ];
+    }
+    let result = await Data.find(query);
 
-    // Tạo một mảng mới chứa các bản sao với trường FullNameIn được thêm vào
+
+    if((cdsid || fullName) && resultArray.length == 0){
+      result = []
+    }
     const updatedResult = result.map(async (item) => {
       if (item.ImageUrlIn != null) {
         item.ImageUrlIn = ip_server + item.ImageUrlIn;
@@ -246,7 +262,6 @@ exports.getAllDataReport = async (req, res) => {
       return { ...item };
     });
     const resolvedUpdatedResult = await Promise.all(updatedResult);
-    console.log(resolvedUpdatedResult)
     res.status(200).json({ message: 'Dữ liệu lấy thành công', data: resolvedUpdatedResult });
   } catch (error) {
     console.error('Lỗi khi tìm kiếm hoặc xử lý dữ liệu:', error.message);
@@ -282,11 +297,8 @@ exports.createData = async (req, res) => { // TEST
     res.status(500).json({ message: 'Thêm mới thất bại' });
   }
 };
-
-// Hành động để cập nhật thông tin người dùng
 exports.setStatusData = async (req, res) => {
   try {
-    console.log('set')
     const pkid = req.body.pkid
     if (pkid != null && pkid != '') {
       const setStatusData = await Data.findByIdAndUpdate(
@@ -304,7 +316,6 @@ exports.setStatusData = async (req, res) => {
 exports.setNote = async (req, res) => {
   try {
     const { pkid, note, confirm } = req.body;
-    console.log(req.body)
     if (pkid != null && pkid != '') {
       const setStatusData = await Data.findByIdAndUpdate(
         { _id: pkid },
@@ -337,6 +348,61 @@ exports.setEditData = async (req, res) => {
     res.status(500).json({ message: 'Lỗi cập nhật người dùng' });
   }
 };
+exports.getDepartmentData = async (req, res) => {
+  try {
+    const uniqueValues = await filterUniqueValues('Phòng ban');
+    res.status(200).json({ message: 'Thành công',data:uniqueValues });
+  } catch (error) {
+    res.status(500).json({ message: 'Thất bại',error:error });
+  }
+};
+
+async function filterUniqueValues(columnName) {
+  const uniqueValues = new Set();
+
+  return new Promise((resolve, reject) => {
+    fs.createReadStream(idPath)
+      .pipe(csv.parse({ headers: true }))
+      .on('data', (data) => {
+        const value = data[columnName];
+        if (!uniqueValues.has(value) && value != '') {
+          uniqueValues.add(value);
+        }
+      })
+      .on('end', () => {
+        resolve(Array.from(uniqueValues));
+      })
+      .on('error', (error) => {
+        reject(error);
+      });
+  });
+}
+function searchAndGetCardIdByColumns(fullName, cdsid, department) {
+  return new Promise((resolve, reject) => {
+    const cardIds = [];
+    const stream = fs.createReadStream(idPath);
+
+    stream
+      .pipe(csv.parse({ headers: true }))
+      .on('data', (row) => {
+        // Kiểm tra giá trị của cột tương ứng với các đầu vào không rỗng
+        if (
+          (!fullName || row['Tên nhân viên'].toUpperCase().includes(fullName.toUpperCase())) &&
+          (!cdsid || row['Mã CDSID'].toUpperCase().includes(cdsid.toUpperCase())) &&
+          (!department || row['Phòng ban'].includes(department))
+        ) {
+          cardIds.push(row['Mã thẻ']);
+        }
+      })
+      .on('end', () => {
+        resolve(cardIds);
+      })
+      .on('error', (error) => {
+        reject(error);
+      });
+  });
+}
+
 function searchCSVByColumnIndex(searchTerm, columnIndex) {
   return new Promise((resolve, reject) => {
     const data = [];
