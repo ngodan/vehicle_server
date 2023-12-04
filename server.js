@@ -9,6 +9,7 @@ const authRoutes = require('./routes/authRoutes');
 const dataRoutes = require('./routes/dataRoutes');
 const path = require('path');
 const dataController = require('./controllers/dataController');
+const ipServer = process.env.IPCLIENT +  process.env.PORT_CLIENT
 const Data = require('./models/Data');
 
 // Middleware
@@ -69,7 +70,7 @@ db.on('error', (error) => {
 const server = http.createServer(app);
 const io = socketIo(server, { 
     cors :true,
-    origin:['http://10.0.2.15:80']
+    origin:[`${ipServer}`]
  });
 
 io.on('connection', (socket) => {
@@ -77,7 +78,7 @@ io.on('connection', (socket) => {
 });
 
 // Start server
-const port = process.env.PORT_SERVER || 8800;
+const port = process.env.PORT_SERVER || 3500;
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

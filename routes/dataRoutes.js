@@ -8,6 +8,7 @@ router.post('/getdefault', dataController.getDataDefault);
 router.post('/setstatus', dataController.setStatusData);
 router.post('/setedit', dataController.setEditData  );
 router.post('/getreportdata', dataController.getAllDataReport);
+router.post('/setnote', dataController.setNote);
 
 
 module.exports = router;

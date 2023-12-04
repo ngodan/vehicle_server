@@ -18,7 +18,9 @@ const dataSchema = new mongoose.Schema({
   Status: String,
   ImageUrlIn:String,
   ImageUrlOut:String,
-  IsEdit:Number
+  IsEdit:Number,
+  RootCause:String,
+  ActionNote:String,
 });
 
 module.exports = mongoose.model('Data', dataSchema, 'data');

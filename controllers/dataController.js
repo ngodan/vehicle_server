@@ -3,84 +3,83 @@ const bcrypt = require('bcrypt');
 const { getRndInteger, formatDateTime } = require('../utils/caculator');
 require('dotenv').config();
 const Data = require('../models/Data');
-const port = process.env.PORT || 5000;
-const ip_server = process.env.IPSERVER || 'http://localhost';
+const ip_server = 'http://' + process.env.IPSERVER + ":" +  process.env.PORT_SERVER +  '/images/'; 
 const idPath = process.env.PATH_ID.replace(/\\\\/g, '/');
 const fs = require('fs');
 const csv = require('fast-csv');
 exports.getDataStream = async (req, res) => {
   try {
     let dataLane = [];
-    const ipResult = 'http://' + ip_server + ':' + port
+    
     if (req.operationType == 'insert' && (req.document.LaneOut == null || req.document.LaneOut == '')) {
-      let csidIn = ''
-      let fullNameIn = ''
-      let departmentIn = ''
+      let CdsidIn = ''
+      let FullNameIn = ''
+      let DepartmentIn = ''
 
       const infoIn = await searchCSVByColumnIndex(req.document.FordCardIDIn, 0);
       if (infoIn.length > 0) {
         const data = Object.values(infoIn[0]);
-        csidIn = data[1]
-        fullNameIn = data[2]
-        departmentIn = data[3]
+        CdsidIn = data[1]
+        FullNameIn = data[2]
+        DepartmentIn = data[3]
       }
       dataLane = {
-        laneID: req.document.LaneIn,
-        laneIn: {
-          imageUrl: ipResult + '/images/' + req.document.ImageUrlIn,
-          dateTime: formatDateTime(req.document.DateTimeIn),
-          licensePlate: req.document.LicensePlateIn,
-          csid: csidIn,
-          fullName: fullNameIn,
-          department: departmentIn,
+        LaneID: req.document.LaneIn,
+        LaneIn: {
+          ImageUrlIn: ip_server + req.document.ImageUrlIn,
+          DateTimeIn: formatDateTime(req.document.DateTimeIn),
+          LicensePlateIn: req.document.LicensePlateIn,
+          CdsidIn: CdsidIn,
+          FullNameIn: FullNameIn,
+          DepartmentIn: DepartmentIn,
         }
       }
     }
     else {
-      let csidIn = ''
-      let fullNameIn = ''
-      let departmentIn = ''
-      let csidOut = ''
-      let fullNameOut = ''
-      let departmentOut = ''
+      let CdsidIn = ''
+      let FullNameIn = ''
+      let DepartmentIn = ''
+      let CdsidOut = ''
+      let FullNameOut = ''
+      let DepartmentOut = ''
       const infoIn = await searchCSVByColumnIndex(req.document.FordCardIDIn, 0);
       const infoOut = await searchCSVByColumnIndex(req.document.FordCardIDOut, 0);
       if (infoIn.length > 0) {
         const data = Object.values(infoIn[0]);
-        csidIn = data[1]
-        fullNameIn = data[2]
-        departmentIn = data[3]
+        CdsidIn = data[1]
+        FullNameIn = data[2]
+        DepartmentIn = data[3]
       }
       if (infoOut.length > 0) {
         const data = Object.values(infoOut[0]);
-        csidOut = data[1]
-        fullNameOut = data[2]
-        departmentOut = data[3]
+        CdsidOut = data[1]
+        FullNameOut = data[2]
+        DepartmentOut = data[3]
       }
       if (infoOut.length > 0) {
         const data = Object.values(infoOut[0]);
-        csidOut = data[1]
-        fullNameOut = data[2]
-        departmentOut = data[3]
+        CdsidOut = data[1]
+        FullNameOut = data[2]
+        DepartmentOut = data[3]
       }
       dataLane = {
-        laneID: req.document.LaneOut,
-        laneOut: {
+        LaneID: req.document.LaneOut,
+        LaneOut: {
           pkid: req.document._id,
-          imageUrlIn: ipResult + '/images/' + req.document.ImageUrlIn,
-          imageUrlOut: ipResult + '/images/' + req.document.ImageUrlOut,
-          licensePlateIn: req.document.LicensePlateIn,
-          licensePlateOut: req.document.LicensePlateOut,
-          dateTimeIn: formatDateTime(req.document.DateTimeIn),
-          dateTimeOut: formatDateTime(req.document.DateTimeOut),
-          csidIn: csidIn,
-          fullNameIn: fullNameIn,
-          departmentIn: departmentIn,
-          csidOut: csidOut,
-          fullNameOut: fullNameOut,
-          departmentOut: departmentOut,
-          status: req.document.Status,
-          isEdit: req.document.IsEdit,
+          ImageUrlIn: ip_server + req.document.ImageUrlIn,
+          ImageUrlOut: ip_server + req.document.ImageUrlOut,
+          LicensePlateIn: req.document.LicensePlateIn,
+          LicensePlateOut: req.document.LicensePlateOut,
+          DateTimeIn: formatDateTime(req.document.DateTimeIn),
+          DateTimeOut: formatDateTime(req.document.DateTimeOut),
+          CdsidIn: CdsidIn,
+          FullNameIn: FullNameIn,
+          DepartmentIn: DepartmentIn,
+          CdsidOut: CdsidOut,
+          FullNameOut: FullNameOut,
+          DepartmentOut: DepartmentOut,
+          Status: req.document.Status,
+          IsEdit: req.document.IsEdit,
         }
       }
     }
@@ -94,7 +93,6 @@ exports.getDataStream = async (req, res) => {
 exports.getDataDefault = async (req, res) => {
   try {
     let dataResult = [];
-    const ipResult = 'http://' + ip_server + ':' + port;
     const resultIn = await Data.aggregate([
       {
         $match: {
@@ -103,7 +101,7 @@ exports.getDataDefault = async (req, res) => {
         },
       },
       {
-        $sort: { DateTimeIn: -1 }, // Sắp xếp theo dateTimeIn giảm dần
+        $sort: { DateTimeIn: -1 }, // Sắp xếp theo DateTimeIn giảm dần
       },
       {
         $group: {
@@ -120,7 +118,7 @@ exports.getDataDefault = async (req, res) => {
         },
       },
       {
-        $sort: { dateTimeIn: -1 }, // Sắp xếp theo dateTimeIn giảm dần
+        $sort: { DateTimeIn: -1 }, // Sắp xếp theo DateTimeIn giảm dần
       },
       {
         $group: {
@@ -130,70 +128,70 @@ exports.getDataDefault = async (req, res) => {
       },
     ]);
     for (const dataIn of resultIn) {
-      let cdsidIn = ''
-      let fullNameIn = ''
-      let departmentIn = ''
+      let CdsidIn = ''
+      let FullNameIn = ''
+      let DepartmentIn = ''
       const infoIn = await searchCSVByColumnIndex(dataIn.data.FordCardIDIn, 0);
       if (infoIn.length > 0) {
         const data = Object.values(infoIn[0]);
-        cdsidIn = data[1]
-        fullNameIn = data[2]
-        departmentIn = data[3]
+        CdsidIn = data[1]
+        FullNameIn = data[2]
+        DepartmentIn = data[3]
       }
 
       dataResult.push({
-        laneID: dataIn.data.LaneIn,
-        laneIn: {
-          imageUrl: ipResult + '/images/' + dataIn.data.ImageUrlIn,
-          dateTime: formatDateTime(dataIn.data.DateTimeIn),
-          licensePlate: dataIn.data.LicensePlateIn,
-          csid: cdsidIn,
-          fullName: fullNameIn,
-          department: departmentIn
+        LaneID: dataIn.data.LaneIn,
+        LaneIn: {
+          ImageUrlIn: ip_server + dataIn.data.ImageUrlIn,
+          DateTimeIn: formatDateTime(dataIn.data.DateTimeIn),
+          LicensePlateIn: dataIn.data.LicensePlateIn,
+          CdsidIn: CdsidIn,
+          FullNameIn: FullNameIn,
+          DepartmentIn: DepartmentIn
         },
       })
 
     }
     for (const dataOut of resultOut) {
-      let cdsidIn = ''
-      let fullNameIn = ''
-      let departmentIn = ''
-      let cdsidOut = ''
-      let fullNameOut = ''
-      let departmentOut = ''
+      let CdsidIn = ''
+      let FullNameIn = ''
+      let DepartmentIn = ''
+      let CdsidOut = ''
+      let FullNameOut = ''
+      let DepartmentOut = ''
       const infoIn = await searchCSVByColumnIndex(dataOut.data.FordCardIDIn, 0);
       const infoOut = await searchCSVByColumnIndex(dataOut.data.FordCardIDOut, 0);
 
       if (infoOut.length > 0) {
         const data = Object.values(infoOut[0]);
-        cdsidOut = data[1]
-        fullNameOut = data[2]
-        departmentOut = data[3]
+        CdsidOut = data[1]
+        FullNameOut = data[2]
+        DepartmentOut = data[3]
       }
       if (infoIn.length > 0) {
         const data = Object.values(infoIn[0]);
-        cdsidIn = data[1]
-        fullNameIn = data[2]
-        departmentIn = data[3]
+        CdsidIn = data[1]
+        FullNameIn = data[2]
+        DepartmentIn = data[3]
       }
       dataResult.push({
-        laneID: dataOut.data.LaneIn,
-        laneOut: {
+        LaneID: dataOut.data.LaneOut,
+        LaneOut: {
           pkid: dataOut.data._id,
-          imageUrlIn: ipResult + '/images/' + dataOut.data.ImageUrlIn,
-          imageUrlOut: ipResult + '/images/' + dataOut.data.ImageUrlOut,
-          licensePlateIn: dataOut.data.LicensePlateIn,
-          licensePlateOut: dataOut.data.LicensePlateOut,
-          dateTimeIn: formatDateTime(dataOut.data.DateTimeIn),
-          dateTimeOut: formatDateTime(dataOut.data.DateTimeOut),
-          cdsidIn: cdsidIn,
-          fullNameIn: fullNameIn,
-          departmentIn: departmentIn,
-          cdsidOut: cdsidOut,
-          fullNameOut: fullNameOut,
-          departmentOut: departmentOut,
-          status: dataOut.data.Status,
-          isEdit: dataOut.data.isEdit,
+          ImageUrlIn: ip_server + dataOut.data.ImageUrlIn,
+          ImageUrlOut: ip_server + dataOut.data.ImageUrlOut,
+          LicensePlateIn: dataOut.data.LicensePlateIn,
+          LicensePlateOut: dataOut.data.LicensePlateOut,
+          DateTimeIn: formatDateTime(dataOut.data.DateTimeIn),
+          DateTimeOut: formatDateTime(dataOut.data.DateTimeOut),
+          CdsidIn: CdsidIn,
+          FullNameIn: FullNameIn,
+          DepartmentIn: DepartmentIn,
+          CdsidOut: CdsidOut,
+          FullNameOut: FullNameOut,
+          DepartmentOut: DepartmentOut,
+          Status: dataOut.data.Status,
+          IsEdit: dataOut.data.IsEdit,
         }
       })
     }
@@ -206,7 +204,6 @@ exports.getDataDefault = async (req, res) => {
 }
 exports.getAllDataReport = async (req, res) => {
   try {
-    const ipResult = 'http://' + ip_server + ':' + port + '/images/'
 
     const { fordCardID } = req.body;
     let query = {}
@@ -222,16 +219,35 @@ exports.getAllDataReport = async (req, res) => {
       query.FordCardIDIn = fordCardID;
     }
     const result = await Data.find(query);
-    result.forEach((item, index) => {
-      if (item.ImageUrlIn != null) {
-        item.ImageUrlIn = ipResult + item.ImageUrlIn
-      }
-      if (item.ImageUrlOut != null) {
-        item.ImageUrlOut = ipResult + item.ImageUrlOut
-      }
-    })
 
-    res.status(200).json({ message: 'Dữ liệu lấy thành công', data: result });
+    // Tạo một mảng mới chứa các bản sao với trường FullNameIn được thêm vào
+    const updatedResult = result.map(async (item) => {
+      if (item.ImageUrlIn != null) {
+        item.ImageUrlIn = ip_server + item.ImageUrlIn;
+      }
+  
+      if (item.ImageUrlOut != null) {
+        item.ImageUrlOut = ip_server + item.ImageUrlOut;
+      }
+      const info = await searchCSVByColumnIndex(item.FordCardIDIn, 0);
+    
+      if (info.length > 0) {
+        const data = Object.values(info[0]);
+        const updatedItem = { ...item,
+          _doc: {
+          ...item._doc,
+          CdsidIn: data[1],
+          FullNameIn: data[2],
+          DepartmentIn: data[3],
+        }, };
+        return updatedItem;
+      }
+      
+      return { ...item };
+    });
+    const resolvedUpdatedResult = await Promise.all(updatedResult);
+    console.log(resolvedUpdatedResult)
+    res.status(200).json({ message: 'Dữ liệu lấy thành công', data: resolvedUpdatedResult });
   } catch (error) {
     console.error('Lỗi khi tìm kiếm hoặc xử lý dữ liệu:', error.message);
     res.status(500).json({ message: 'Đã xảy ra lỗi' });
@@ -253,7 +269,9 @@ exports.createData = async (req, res) => { // TEST
       Status: null,
       ImageUrlIn: `${getRndInteger(1, 21)}.jpg`,
       ImageUrlOut: null,
-      IsEdit: 0
+      IsEdit: 0,
+      RootCause: '',
+      ActionNote: '',
     });
 
     await newData.save();
@@ -283,14 +301,33 @@ exports.setStatusData = async (req, res) => {
     res.status(500).json({ message: 'Lỗi cập nhật người dùng' });
   }
 };
+exports.setNote = async (req, res) => {
+  try {
+    const { pkid, note, confirm } = req.body;
+    console.log(req.body)
+    if (pkid != null && pkid != '') {
+      const setStatusData = await Data.findByIdAndUpdate(
+        { _id: pkid },
+        { 
+          RootCause: confirm,
+          ActionNote:note,
+        },
+        { new: true }
+      );
+    }
+    res.status(200).json({ message: 'Thành công' });
+  } catch (error) {
+    console.error('Lỗi cập nhật dữ liệu:', error);
+    res.status(500).json({ message: 'Lỗi cập nhật',Error:error });
+  }
+};
 exports.setEditData = async (req, res) => {
   try {
-    console.log('set')
     const pkid = req.body.pkid
     if (pkid != null && pkid != '') {
       const setStatusData = await Data.findByIdAndUpdate(
         { _id: pkid },
-        { isEdit: 2 },
+        { IsEdit: 2 },
         { new: true }
       );
     }
