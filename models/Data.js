@@ -21,6 +21,7 @@ const dataSchema = new mongoose.Schema({
   Check:Number,
   Rootcause:String,
   Action:String,
+  TypeOfError:String,
 });
 
 module.exports = mongoose.model('Data', dataSchema,collection );

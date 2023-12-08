@@ -329,7 +329,7 @@ exports.setStatusData = async (req, res) => {
 };
 exports.setNote = async (req, res) => {
   try {
-    const { pkid, note, confirm,status } = req.body;
+    const { pkid, note, confirm,status,typeError } = req.body;
     if (pkid != null && pkid != '') { 
       const setStatusData = await Data.findByIdAndUpdate(
         { _id: pkid },
@@ -337,6 +337,7 @@ exports.setNote = async (req, res) => {
           Rootcause: confirm,
           Action:note,
           Status: status,
+          TypeOfError : typeError,
           Check : (status == "OK") ? 1 : 2  
         },
         { new: true }
