@@ -11,7 +11,7 @@ exports.getDataStream = async (req, res) => {
   try {
     let dataLane = [];
     
-    if (req.operationType == 'insert' && (req.document.LaneOut == null || req.document.LaneOut == '')) {
+    if (req.operationType == 'insert' && (Number(req.document.LaneOut) == null || Number(req.document.LaneOut) == '')) {
       let CdsidIn = ''
       let FullNameIn = ''
       let DepartmentIn = ''
@@ -24,9 +24,9 @@ exports.getDataStream = async (req, res) => {
         DepartmentIn = data[3]
       }
       dataLane = {
-        LaneID: req.document.LaneIn,
+        LaneID: (req.document.LaneIn == null || req.document.LaneIn == '') ? 0 : Number(req.document.LaneIn),
         LaneIn: {
-          ImageUrlIn: ip_server + req.document.ImageUrlIn,
+          ImageIn: ip_server + req.document.ImageIn + '.jpg',
           DateTimeIn: formatDateTime(req.document.DateTimeIn),
           LicensePlateIn: req.document.LicensePlateIn,
           CdsidIn: CdsidIn,
@@ -63,11 +63,11 @@ exports.getDataStream = async (req, res) => {
         DepartmentOut = data[3]
       }
       dataLane = {
-        LaneID: req.document.LaneOut,
+        LaneID: (req.document.LaneOut == null || req.document.LaneOut == '') ? 0 : Number(req.document.LaneOut),
         LaneOut: {
           pkid: req.document._id,
-          ImageUrlIn: ip_server + req.document.ImageUrlIn,
-          ImageUrlOut: ip_server + req.document.ImageUrlOut,
+          ImageIn: ip_server + req.document.ImageIn + '.jpg',
+          ImageOut: ip_server + req.document.ImageOut + '.jpg',
           LicensePlateIn: req.document.LicensePlateIn,
           LicensePlateOut: req.document.LicensePlateOut,
           DateTimeIn: formatDateTime(req.document.DateTimeIn),
@@ -79,7 +79,7 @@ exports.getDataStream = async (req, res) => {
           FullNameOut: FullNameOut,
           DepartmentOut: DepartmentOut,
           Status: req.document.Status,
-          IsEdit: req.document.IsEdit,
+          Check: req.document.Check,
         }
       }
     }
@@ -140,9 +140,9 @@ exports.getDataDefault = async (req, res) => {
       }
 
       dataResult.push({
-        LaneID: dataIn.data.LaneIn,
+        LaneID: (dataIn.data.LaneIn == '' || dataIn.data.LaneIn == null) ? 0 : Number(dataIn.data.LaneIn),
         LaneIn: {
-          ImageUrlIn: ip_server + dataIn.data.ImageUrlIn,
+          ImageIn:(dataIn.data.ImageIn == null ||dataIn.data.ImageIn == '' ) ? null : ip_server + dataIn.data.ImageIn + '.jpg',
           DateTimeIn: formatDateTime(dataIn.data.DateTimeIn),
           LicensePlateIn: dataIn.data.LicensePlateIn,
           CdsidIn: CdsidIn,
@@ -175,11 +175,11 @@ exports.getDataDefault = async (req, res) => {
         DepartmentIn = data[3]
       }
       dataResult.push({
-        LaneID: dataOut.data.LaneOut,
+        LaneID: (dataOut.data.LaneOut == '' || dataOut.data.LaneOut == null) ? 0 : Number(dataOut.data.LaneOut),
         LaneOut: {
           pkid: dataOut.data._id,
-          ImageUrlIn: ip_server + dataOut.data.ImageUrlIn,
-          ImageUrlOut: ip_server + dataOut.data.ImageUrlOut,
+          ImageIn: (dataOut.data.ImageIn == null || dataOut.data.ImageIn == '' ) ? null : ip_server + dataOut.data.ImageIn + '.jpg',
+          ImageOut: (dataOut.data.ImageOut == null || dataOut.data.ImageOut == '' ) ? null : ip_server + dataOut.data.ImageOut + '.jpg',
           LicensePlateIn: dataOut.data.LicensePlateIn,
           LicensePlateOut: dataOut.data.LicensePlateOut,
           DateTimeIn: formatDateTime(dataOut.data.DateTimeIn),
@@ -191,7 +191,7 @@ exports.getDataDefault = async (req, res) => {
           FullNameOut: FullNameOut,
           DepartmentOut: DepartmentOut,
           Status: dataOut.data.Status,
-          IsEdit: dataOut.data.IsEdit,
+          Check: dataOut.data.Check,
         }
       })
     }
@@ -204,7 +204,7 @@ exports.getDataDefault = async (req, res) => {
 }
 exports.getAllDataReport = async (req, res) => {
   try {
-    const { fordCardID,fullName,cdsid,department,startDateTime,endDateTime } = req.body;
+    const { fordCardID,fullName,cdsid,department,startDateTime,endDateTime,status,check } = req.body;
     const resultArray = await searchAndGetCardIdByColumns(fullName,cdsid,department);
     let fordCard = []
     if(resultArray.length > 0 ) fordCard = resultArray;
@@ -213,37 +213,51 @@ exports.getAllDataReport = async (req, res) => {
       fordCard[0] = fordCardID;
     } 
     let query = {}
-    query.$or = [{Status: 'NOK',},{Status: null,},];
-    
+    //Query Status
+    if(status == "NOK"){
+      query.$or = [{Status: 'NOK'},{Status: null}];
+    }
+    else if(status == "OK"){
+      query.Status = "OK";
+    } 
+    //Query Check
+    if(check!= 0)query.Check = Number(check)
+
+    //Query Fordcard ID
     if (fordCard.length>0) {
       query.FordCardIDIn = { $in: fordCard };
     }
+    //Query Datetime
     if (startDateTime && endDateTime) {
-      query.$or = [
+      if (!query.$and) {
+        query.$and = [];
+      }
+    
+      query.$and.push(
         {
-          DateTimeIn: { $gte: new Date(startDateTime), $lte: new Date(endDateTime) },
-        },
-        {
-          $and: [
-            { DateTimeOut: { $ne: null } },
-            { DateTimeOut: { $gte: new Date(startDateTime), $lte: new Date(endDateTime) } },
+          $or: [
+            { DateTimeIn: { $gte: new Date(startDateTime), $lte: new Date(endDateTime) } },
+            {
+              $and: [
+                { DateTimeOut: { $ne: null } },
+                { DateTimeOut: { $gte: new Date(startDateTime), $lte: new Date(endDateTime) } },
+              ],
+            },
           ],
-        },
-      ];
+        }
+      );
     }
     let result = await Data.find(query);
-
-
     if((cdsid || fullName) && resultArray.length == 0){
       result = []
     }
     const updatedResult = result.map(async (item) => {
-      if (item.ImageUrlIn != null) {
-        item.ImageUrlIn = ip_server + item.ImageUrlIn;
+      if (item.ImageIn != null) {
+        item.ImageIn = ip_server + item.ImageIn + '.jpg';
       }
   
-      if (item.ImageUrlOut != null) {
-        item.ImageUrlOut = ip_server + item.ImageUrlOut;
+      if (item.ImageOut != null) {
+        item.ImageOut = ip_server + item.ImageOut + '.jpg';
       }
       const info = await searchCSVByColumnIndex(item.FordCardIDIn, 0);
     
@@ -282,11 +296,11 @@ exports.createData = async (req, res) => { // TEST
       DateTimeIn: new Date(),
       DateTimeOut: null,
       Status: null,
-      ImageUrlIn: `${getRndInteger(1, 21)}.jpg`,
-      ImageUrlOut: null,
-      IsEdit: 0,
-      RootCause: '',
-      ActionNote: '',
+      ImageIn: `${getRndInteger(1, 21)}`,
+      ImageOut: null,
+      Check: 0,
+      Rootcause: '',
+      Action: '',
     });
 
     await newData.save();
@@ -303,7 +317,7 @@ exports.setStatusData = async (req, res) => {
     if (pkid != null && pkid != '') {
       const setStatusData = await Data.findByIdAndUpdate(
         { _id: pkid },
-        { Status: 'OK' },
+        { Status: 'OK',Check:1 },
         { new: true }
       );
     }
@@ -315,13 +329,15 @@ exports.setStatusData = async (req, res) => {
 };
 exports.setNote = async (req, res) => {
   try {
-    const { pkid, note, confirm } = req.body;
-    if (pkid != null && pkid != '') {
+    const { pkid, note, confirm,status } = req.body;
+    if (pkid != null && pkid != '') { 
       const setStatusData = await Data.findByIdAndUpdate(
         { _id: pkid },
         { 
-          RootCause: confirm,
-          ActionNote:note,
+          Rootcause: confirm,
+          Action:note,
+          Status: status,
+          Check : (status == "OK") ? 1 : 2  
         },
         { new: true }
       );
@@ -338,7 +354,7 @@ exports.setEditData = async (req, res) => {
     if (pkid != null && pkid != '') {
       const setStatusData = await Data.findByIdAndUpdate(
         { _id: pkid },
-        { IsEdit: 2 },
+        { Check: 2 },
         { new: true }
       );
     }
@@ -382,26 +398,34 @@ function searchAndGetCardIdByColumns(fullName, cdsid, department) {
     const cardIds = [];
     const stream = fs.createReadStream(idPath);
 
-    stream
-      .pipe(csv.parse({ headers: true }))
-      .on('data', (row) => {
-        // Kiểm tra giá trị của cột tương ứng với các đầu vào không rỗng
-        if (
-          (!fullName || row['Tên nhân viên'].toUpperCase().includes(fullName.toUpperCase())) &&
-          (!cdsid || row['Mã CDSID'].toUpperCase().includes(cdsid.toUpperCase())) &&
-          (!department || row['Phòng ban'].includes(department))
-        ) {
-          cardIds.push(row['Mã thẻ']);
-        }
-      })
-      .on('end', () => {
-        resolve(cardIds);
-      })
-      .on('error', (error) => {
-        reject(error);
-      });
+    // Kiểm tra xem cả ba trường đều rỗng hoặc null
+    if ((fullName === null || fullName === '') && (cdsid === null || cdsid === '') && (department === null || department === '')) {
+      resolve([]);
+    } else {
+      stream
+        .pipe(csv.parse({ headers: true }))
+        .on('data', (row) => {
+          // Kiểm tra giá trị của cột tương ứng với các đầu vào không rỗng
+          if (
+            (!fullName || row['Tên nhân viên'].toUpperCase().includes(fullName.toUpperCase())) &&
+            (!cdsid || row['Mã CDSID'].toUpperCase().includes(cdsid.toUpperCase())) &&
+            (!department || row['Phòng ban'].includes(department))
+          ) {
+            if (row['Mã thẻ']) {
+              cardIds.push(row['Mã thẻ']);
+            }
+          }
+        })
+        .on('end', () => {
+          resolve(cardIds);
+        })
+        .on('error', (error) => {
+          reject(error);
+        });
+    }
   });
 }
+
 
 function searchCSVByColumnIndex(searchTerm, columnIndex) {
   return new Promise((resolve, reject) => {

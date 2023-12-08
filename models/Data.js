@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const collection = process.env.MONGODB_DATA_TABLE || data
 const dataSchema = new mongoose.Schema({
   LaneIn : Number,
   LaneOut : Number,
@@ -16,11 +16,11 @@ const dataSchema = new mongoose.Schema({
     type: Date,
   },
   Status: String,
-  ImageUrlIn:String,
-  ImageUrlOut:String,
-  IsEdit:Number,
-  RootCause:String,
-  ActionNote:String,
+  ImageIn:String,
+  ImageOut:String,
+  Check:Number,
+  Rootcause:String,
+  Action:String,
 });
 
-module.exports = mongoose.model('Data', dataSchema, 'data');
+module.exports = mongoose.model('Data', dataSchema,collection );
