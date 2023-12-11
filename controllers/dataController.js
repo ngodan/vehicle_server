@@ -7,6 +7,7 @@ const ip_server = 'http://' + process.env.IPSERVER + ":" +  process.env.PORT_SER
 const idPath = process.env.PATH_ID.replace(/\\\\/g, '/');
 const fs = require('fs');
 const csv = require('fast-csv');
+const { generatePDF} = require('../utils/triggerPDFCreater');
 exports.getDataStream = async (req, res) => {
   try {
     let dataLane = [];
@@ -349,6 +350,9 @@ exports.setNote = async (req, res) => {
     res.status(500).json({ message: 'Lỗi cập nhật',Error:error });
   }
 };
+exports.testPDF =  async (req, res) => {
+  await generatePDF(1);
+}
 exports.setEditData = async (req, res) => {
   try {
     const pkid = req.body.pkid

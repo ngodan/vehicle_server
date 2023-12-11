@@ -11,6 +11,8 @@ const path = require('path');
 const dataController = require('./controllers/dataController');
 const ipServer = process.env.IPCLIENT +  process.env.PORT_CLIENT
 const Data = require('./models/Data');
+const cron = require('node-cron');
+const { generatePDF} = require('./utils/triggerPDFCreater');
 
 // Middleware
 app.use(express.json());
@@ -26,7 +28,7 @@ const uploadFolderPath = path.join(currentDirectory, 'upload/default');
 app.use('/images', express.static(imageDirectory));
 app.use('/default', express.static(uploadFolderPath));
 
-// Connect to MongoDB
+
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -79,6 +81,26 @@ io.on('connection', (socket) => {
   console.log('Client connected');
 });
 
+
+cron.schedule('0 8,20 * * *', async () => {
+  const currentHour = new Date().getHours();
+  if (currentHour === 8) {
+    try {
+      await generatePDF(2);
+      console.log('PDF generated and email sent successfully!');
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  else if(currentHour === 20){
+    try {
+      await generatePDF(1);
+      console.log('PDF generated and email sent successfully!');
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+})
 // Start server
 const port = process.env.PORT_SERVER || 3500;
 server.listen(port, () => {
