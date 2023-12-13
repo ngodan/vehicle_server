@@ -3,15 +3,16 @@ const bcrypt = require('bcrypt');
 const { getRndInteger, formatDateTime } = require('../utils/caculator');
 require('dotenv').config();
 const Data = require('../models/Data');
-const ip_server = 'http://' + process.env.IPSERVER + ":" +  process.env.PORT_SERVER +  '/images/'; 
+const ip_server = 'http://' + process.env.IPSERVER + ":" + process.env.PORT_SERVER + '/images/';
 const idPath = process.env.PATH_ID.replace(/\\\\/g, '/');
 const fs = require('fs');
 const csv = require('fast-csv');
-const { generatePDF} = require('../utils/triggerPDFCreater');
+const { generatePDF } = require('../utils/triggerPDFCreater');
+let globalDataReport = [];
 exports.getDataStream = async (req, res) => {
   try {
     let dataLane = [];
-    
+
     if (req.operationType == 'insert' && (Number(req.document.LaneOut) == null || Number(req.document.LaneOut) == '')) {
       let CdsidIn = ''
       let FullNameIn = ''
@@ -143,7 +144,7 @@ exports.getDataDefault = async (req, res) => {
       dataResult.push({
         LaneID: (dataIn.data.LaneIn == '' || dataIn.data.LaneIn == null) ? 0 : Number(dataIn.data.LaneIn),
         LaneIn: {
-          ImageIn:(dataIn.data.ImageIn == null ||dataIn.data.ImageIn == '' ) ? null : ip_server + dataIn.data.ImageIn + '.jpg',
+          ImageIn: (dataIn.data.ImageIn == null || dataIn.data.ImageIn == '') ? null : ip_server + dataIn.data.ImageIn + '.jpg',
           DateTimeIn: formatDateTime(dataIn.data.DateTimeIn),
           LicensePlateIn: dataIn.data.LicensePlateIn,
           CdsidIn: CdsidIn,
@@ -179,8 +180,8 @@ exports.getDataDefault = async (req, res) => {
         LaneID: (dataOut.data.LaneOut == '' || dataOut.data.LaneOut == null) ? 0 : Number(dataOut.data.LaneOut),
         LaneOut: {
           pkid: dataOut.data._id,
-          ImageIn: (dataOut.data.ImageIn == null || dataOut.data.ImageIn == '' ) ? null : ip_server + dataOut.data.ImageIn + '.jpg',
-          ImageOut: (dataOut.data.ImageOut == null || dataOut.data.ImageOut == '' ) ? null : ip_server + dataOut.data.ImageOut + '.jpg',
+          ImageIn: (dataOut.data.ImageIn == null || dataOut.data.ImageIn == '') ? null : ip_server + dataOut.data.ImageIn + '.jpg',
+          ImageOut: (dataOut.data.ImageOut == null || dataOut.data.ImageOut == '') ? null : ip_server + dataOut.data.ImageOut + '.jpg',
           LicensePlateIn: dataOut.data.LicensePlateIn,
           LicensePlateOut: dataOut.data.LicensePlateOut,
           DateTimeIn: formatDateTime(dataOut.data.DateTimeIn),
@@ -203,29 +204,31 @@ exports.getDataDefault = async (req, res) => {
     res.status(500).json({ message: 'Lấy thất bại', error: error.message });
   }
 }
+
 exports.getAllDataReport = async (req, res) => {
   try {
-    const { fordCardID,fullName,cdsid,department,startDateTime,endDateTime,status,check } = req.body;
-    const resultArray = await searchAndGetCardIdByColumns(fullName,cdsid,department);
+    const { fordCardID, fullName, cdsid, department, startDateTime, endDateTime, status, check } = req.body;
+    globalDataReport = []
     let fordCard = []
-    if(resultArray.length > 0 ) fordCard = resultArray;
-    if(fordCardID){
+    const resultArray = await searchAndGetCardIdByColumns(fullName, cdsid, department);
+    if (resultArray.length > 0) fordCard = resultArray;
+    if (fordCardID) {
       fordCard = []
       fordCard[0] = fordCardID;
-    } 
+    }
     let query = {}
     //Query Status
-    if(status == "NOK"){
-      query.$or = [{Status: 'NOK'},{Status: null}];
+    if (status == "NOK") {
+      query.$or = [{ Status: 'NOK' }, { Status: null }];
     }
-    else if(status == "OK"){
+    else if (status == "OK") {
       query.Status = "OK";
-    } 
+    }
     //Query Check
-    if(check!= 0)query.Check = Number(check)
+    if (check != 0) query.Check = Number(check)
 
     //Query Fordcard ID
-    if (fordCard.length>0) {
+    if (fordCard.length > 0) {
       query.FordCardIDIn = { $in: fordCard };
     }
     //Query Datetime
@@ -233,50 +236,68 @@ exports.getAllDataReport = async (req, res) => {
       if (!query.$and) {
         query.$and = [];
       }
-    
-      query.$and.push(
-        {
-          $or: [
-            { DateTimeIn: { $gte: new Date(startDateTime), $lte: new Date(endDateTime) } },
-            {
-              $and: [
-                { DateTimeOut: { $ne: null } },
-                { DateTimeOut: { $gte: new Date(startDateTime), $lte: new Date(endDateTime) } },
-              ],
+
+
+      query.$and.push({
+        $and: [
+          {
+            DateTimeIn: {
+              $gte: new Date(startDateTime),
+              $lte: new Date(endDateTime),
+              $ne: null
             },
-          ],
-        }
-      );
+          },
+          {
+            $or: [
+              { DateTimeOut: null },
+              {
+                $and: [
+                  { DateTimeOut: { $gte: new Date(startDateTime) } },
+                  { DateTimeOut: { $lte: new Date(endDateTime) } },
+                ],
+              },
+            ],
+          },
+        ],
+      });
     }
     let result = await Data.find(query);
-    if((cdsid || fullName) && resultArray.length == 0){
+    if ((cdsid || fullName) && resultArray.length == 0) {
       result = []
     }
     const updatedResult = result.map(async (item) => {
       if (item.ImageIn != null) {
         item.ImageIn = ip_server + item.ImageIn + '.jpg';
       }
-  
+
       if (item.ImageOut != null) {
         item.ImageOut = ip_server + item.ImageOut + '.jpg';
       }
       const info = await searchCSVByColumnIndex(item.FordCardIDIn, 0);
-    
+
       if (info.length > 0) {
         const data = Object.values(info[0]);
-        const updatedItem = { ...item,
+        const updatedItem = {
+          ...item,
           _doc: {
-          ...item._doc,
-          CdsidIn: data[1],
-          FullNameIn: data[2],
-          DepartmentIn: data[3],
-        }, };
+            ...item._doc,
+            CdsidIn: data[1],
+            FullNameIn: data[2],
+            DepartmentIn: data[3],
+          },
+        };
         return updatedItem;
       }
-      
+
       return { ...item };
     });
+    
     const resolvedUpdatedResult = await Promise.all(updatedResult);
+    globalDataReport = {
+      data : resolvedUpdatedResult,
+      startTime: formatDateTime(startDateTime),
+      endTime: formatDateTime(endDateTime)
+    };
     res.status(200).json({ message: 'Dữ liệu lấy thành công', data: resolvedUpdatedResult });
   } catch (error) {
     console.error('Lỗi khi tìm kiếm hoặc xử lý dữ liệu:', error.message);
@@ -318,7 +339,7 @@ exports.setStatusData = async (req, res) => {
     if (pkid != null && pkid != '') {
       const setStatusData = await Data.findByIdAndUpdate(
         { _id: pkid },
-        { Status: 'OK',Check:1 },
+        { Status: 'OK', Check: 1 },
         { new: true }
       );
     }
@@ -330,16 +351,16 @@ exports.setStatusData = async (req, res) => {
 };
 exports.setNote = async (req, res) => {
   try {
-    const { pkid, note, confirm,status,typeError } = req.body;
-    if (pkid != null && pkid != '') { 
+    const { pkid, note, confirm, status, typeError } = req.body;
+    if (pkid != null && pkid != '') {
       const setStatusData = await Data.findByIdAndUpdate(
         { _id: pkid },
-        { 
+        {
           Rootcause: confirm,
-          Action:note,
+          Action: note,
           Status: status,
-          TypeOfError : typeError,
-          Check : (status == "OK") ? 1 : 2  
+          TypeOfError: typeError,
+          Check: (status == "OK") ? 1 : 2
         },
         { new: true }
       );
@@ -347,11 +368,18 @@ exports.setNote = async (req, res) => {
     res.status(200).json({ message: 'Thành công' });
   } catch (error) {
     console.error('Lỗi cập nhật dữ liệu:', error);
-    res.status(500).json({ message: 'Lỗi cập nhật',Error:error });
+    res.status(500).json({ message: 'Lỗi cập nhật', Error: error });
   }
 };
-exports.testPDF =  async (req, res) => {
-  await generatePDF(1);
+exports.sendMail = async (req, res) => {
+  try {
+    const result = await generatePDF(3,globalDataReport);
+    res.status(200).json({ message: 'Gửi mail thành công', data: result });
+  } catch (error) {
+    console.error('Lỗi khi gửi email:', error);
+    res.status(500).json({ message: 'Lỗi khi gửi email', error: error.message });
+  }
+  //await generatePDF(1);
 }
 exports.setEditData = async (req, res) => {
   try {
@@ -372,9 +400,9 @@ exports.setEditData = async (req, res) => {
 exports.getDepartmentData = async (req, res) => {
   try {
     const uniqueValues = await filterUniqueValues('Phòng ban');
-    res.status(200).json({ message: 'Thành công',data:uniqueValues });
+    res.status(200).json({ message: 'Thành công', data: uniqueValues });
   } catch (error) {
-    res.status(500).json({ message: 'Thất bại',error:error });
+    res.status(500).json({ message: 'Thất bại', error: error });
   }
 };
 

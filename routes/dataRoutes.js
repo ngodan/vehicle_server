@@ -5,7 +5,8 @@ const dataController = require('../controllers/dataController');
 
 // Tuyến đường đăng nhập
 //router.post('/create', dataController.createData);
-router.post('/create', dataController.testPDF);
+//router.post('/create', dataController.testPDF);
+router.post('/sendmail', dataController.sendMail);
 router.post('/getdefault', dataController.getDataDefault);
 router.post('/setstatus', dataController.setStatusData);
 router.post('/setedit', dataController.setEditData  );

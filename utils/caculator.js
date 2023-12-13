@@ -1,22 +1,20 @@
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min) ) + min;
 }
+const moment = require('moment-timezone');
+
 function formatDateTime(dateTimeString) {
-    const date = new Date(dateTimeString);
+    // Tạo đối tượng moment từ chuỗi thời gian với múi giờ 'UTC'
+    const momentDate = moment.utc(dateTimeString);
 
-    // Tạo một đối tượng định dạng ngày và giờ với múi giờ là 'Asia/Ho_Chi_Minh'
-    const formatter = new Intl.DateTimeFormat('vi-VN', {
-        hour: '2-digit',
-        minute: '2-digit',
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        timeZone: 'Asia/Ho_Chi_Minh',
-    });
+    // Chuyển đổi về múi giờ 'Asia/Ho_Chi_Minh'
+    //momentDate.tz('Asia/Ho_Chi_Minh');
 
-    // Sử dụng formatter để định dạng ngày và giờ
-    const formattedDateTime = formatter.format(date);
-    console.log(formattedDateTime)
+    // Định dạng ngày và giờ theo yêu cầu
+    const formattedDateTime = momentDate.format('HH:mm DD/MM/YYYY');
+
     return formattedDateTime;
 }
+
+
 module.exports = { getRndInteger,formatDateTime };

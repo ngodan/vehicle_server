@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-         .layout-title {
+        .layout-title {
             text-align: center;
             padding: 0px 0px 30px 0px;
             font-size: 25px;
@@ -15,13 +15,15 @@
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
-            
+
         }
+
         .layout-title h2 {
-    padding: 0px;
-    margin: 0px;
-    margin-bottom: 10px;
-}
+            padding: 0px;
+            margin: 0px;
+            margin-bottom: 10px;
+        }
+
         .layout-area.p-20 {
             padding: 20px;
         }
@@ -63,9 +65,11 @@
             background-size: cover;
             object-fit: cover;
         }
+
         tbody tr {
             border-bottom: 1px solid #bfbfbf;
         }
+
         tbody tr td {
             border-left: 1px solid #bfbfbf;
             padding: 10px;
@@ -82,27 +86,53 @@
             border-bottom: 1px solid #bfbfbf;
             /* border-top: 1px solid #bfbfbf; */
         }
-        .data-top{
+
+        .data-top {
             display: flex;
             justify-content: space-around;
         }
-        tbody tr > td:first-child {
-    border-left: none;
-}
-        .layout-logo {
-    position: absolute;
-    width: 70px;
-}
 
-.layout-logo img {
-    width: 100%;
-    height: 100%;
-    background-position: center;
-    background-size: cover;
-}
-tbody tr td:last-child {
-    vertical-align: middle;
-}
+        tbody tr>td:first-child {
+            border-left: none;
+        }
+
+        .layout-logo {
+            position: absolute;
+            width: 70px;
+        }
+
+        .layout-logo img {
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-size: cover;
+        }
+
+        tbody tr td:last-child {
+            vertical-align: middle;
+        }
+
+        @media print {
+            table {
+                page-break-inside: auto;
+            }
+
+            table,
+            tr,
+            td {
+                border-collapse: collapse;
+            }
+
+            td {
+                padding: 10px;
+                border: 1px solid #bfbfbf;
+            }
+
+            .page-break {
+                page-break-inside: avoid;
+                page-break-after: always;
+            }
+        }
     </style>
 </head>
 
@@ -110,8 +140,8 @@ tbody tr td:last-child {
     <div class="layout-area p-20">
         <div class="layout-logo"><img src="http://localhost:3500/default/logo.png" alt=""></div>
         <div class="layout-title">
-            <h2 style="width: 100%;">CHI TIẾT DỮ LIỆU HỆ THỐNG QUẢN LÝ XE TỰ ĐỘNG</h2> 
-            <span>Từ 20:30 23/12/2023 đến 20:30 23/12/2023</span> 
+            <h2 style="width: 100%;">CHI TIẾT DỮ LIỆU HỆ THỐNG QUẢN LÝ XE TỰ ĐỘNG</h2>
+            <span>Từ 20:30 23/12/2023 đến 20:30 23/12/2023</span>
         </div>
         <div class="layout-content">
             <table class="table table-bordered table-main">
@@ -206,6 +236,210 @@ tbody tr td:last-child {
                         </td>
                     </tr>
                     <tr>
+                        <td scope="row" style="vertical-align: middle; text-align: center; width: 3%">
+                            <!-- key -->
+                        </td>
+                        <td style="width: 7%"></td>
+                        <td style="vertical-align: middle; width: 15%">
+                            <ul>
+                                <li>
+                                    Ford Card ID <br> <strong>831230123123</strong>
+                                </li>
+                                <li>
+                                    CDSID <br> <strong>391dhaks</strong>
+                                </li>
+                                <li>
+                                    Full name <br> <strong>Ngô Viét Đàn và tên dài</strong>
+                                </li>
+                                <li>
+                                    Department <br> <strong>Phòng vật tư</strong>
+                                </li>
+                            </ul>
+                        </td>
+                        <td colspan="2" style="width: 23%">
+                            <div class="data-top">
+                                <div class="data-top__item">
+                                    30/12/2023
+                                    <!-- Ngày vào -->
+                                </div>
+                                <div class="data-top__item">
+                                    10:30
+                                    <!-- Giờ vào -->
+                                </div>
+                            </div>
+                            <div class="data-bottom">
+                                <img src="http://localhost:3500/images/1.jpg" alt="" />
+                                <!-- <div>Không có</div> -->
+                            </div>
+                        </td>
+                        <td colspan="2" style="width: 23%">
+                            <div class="data-top">
+                                <div class="data-top__item">
+                                    30/12/2023
+
+                                    <!-- Ngày ra -->
+                                </div>
+                                <div class="data-top__item">
+                                    10:30
+                                    <!-- Giờ ra -->
+                                </div>
+                            </div>
+                            <div class="data-bottom">
+                                <img src="http://localhost:3500/images/1.jpg" alt="" />
+                                <!-- <div>Không có</div> -->
+                            </div>
+                        </td>
+                        <td style="width: 12%">
+                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
+                            akhd
+                            <!-- Rootcause -->
+                        </td>
+                        <td style="width: 12%">
+                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
+                            akhd
+                            <!-- Action -->
+                        </td>
+                        <td style="width: 12%">
+                            Hậu kiểm
+                        </td>
+                    </tr>
+                    <tr>
+                        <td scope="row" style="vertical-align: middle; text-align: center; width: 3%">
+                            <!-- key -->
+                        </td>
+                        <td style="width: 7%"></td>
+                        <td style="vertical-align: middle; width: 15%">
+                            <ul>
+                                <li>
+                                    Ford Card ID <br> <strong>831230123123</strong>
+                                </li>
+                                <li>
+                                    CDSID <br> <strong>391dhaks</strong>
+                                </li>
+                                <li>
+                                    Full name <br> <strong>Ngô Viét Đàn và tên dài</strong>
+                                </li>
+                                <li>
+                                    Department <br> <strong>Phòng vật tư</strong>
+                                </li>
+                            </ul>
+                        </td>
+                        <td colspan="2" style="width: 23%">
+                            <div class="data-top">
+                                <div class="data-top__item">
+                                    30/12/2023
+                                    <!-- Ngày vào -->
+                                </div>
+                                <div class="data-top__item">
+                                    10:30
+                                    <!-- Giờ vào -->
+                                </div>
+                            </div>
+                            <div class="data-bottom">
+                                <img src="http://localhost:3500/images/1.jpg" alt="" />
+                                <!-- <div>Không có</div> -->
+                            </div>
+                        </td>
+                        <td colspan="2" style="width: 23%">
+                            <div class="data-top">
+                                <div class="data-top__item">
+                                    30/12/2023
+
+                                    <!-- Ngày ra -->
+                                </div>
+                                <div class="data-top__item">
+                                    10:30
+                                    <!-- Giờ ra -->
+                                </div>
+                            </div>
+                            <div class="data-bottom">
+                                <img src="http://localhost:3500/images/1.jpg" alt="" />
+                                <!-- <div>Không có</div> -->
+                            </div>
+                        </td>
+                        <td style="width: 12%">
+                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
+                            akhd
+                            <!-- Rootcause -->
+                        </td>
+                        <td style="width: 12%">
+                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
+                            akhd
+                            <!-- Action -->
+                        </td>
+                        <td style="width: 12%">
+                            Hậu kiểm
+                        </td>
+                    </tr>
+                    <tr>
+                        <td scope="row" style="vertical-align: middle; text-align: center; width: 3%">
+                            <!-- key -->
+                        </td>
+                        <td style="width: 7%"></td>
+                        <td style="vertical-align: middle; width: 15%">
+                            <ul>
+                                <li>
+                                    Ford Card ID <br> <strong>831230123123</strong>
+                                </li>
+                                <li>
+                                    CDSID <br> <strong>391dhaks</strong>
+                                </li>
+                                <li>
+                                    Full name <br> <strong>Ngô Viét Đàn và tên dài</strong>
+                                </li>
+                                <li>
+                                    Department <br> <strong>Phòng vật tư</strong>
+                                </li>
+                            </ul>
+                        </td>
+                        <td colspan="2" style="width: 23%">
+                            <div class="data-top">
+                                <div class="data-top__item">
+                                    30/12/2023
+                                    <!-- Ngày vào -->
+                                </div>
+                                <div class="data-top__item">
+                                    10:30
+                                    <!-- Giờ vào -->
+                                </div>
+                            </div>
+                            <div class="data-bottom">
+                                <img src="http://localhost:3500/images/1.jpg" alt="" />
+                                <!-- <div>Không có</div> -->
+                            </div>
+                        </td>
+                        <td colspan="2" style="width: 23%">
+                            <div class="data-top">
+                                <div class="data-top__item">
+                                    30/12/2023
+
+                                    <!-- Ngày ra -->
+                                </div>
+                                <div class="data-top__item">
+                                    10:30
+                                    <!-- Giờ ra -->
+                                </div>
+                            </div>
+                            <div class="data-bottom">
+                                <img src="http://localhost:3500/images/1.jpg" alt="" />
+                                <!-- <div>Không có</div> -->
+                            </div>
+                        </td>
+                        <td style="width: 12%">
+                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
+                            akhd
+                            <!-- Rootcause -->
+                        </td>
+                        <td style="width: 12%">
+                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
+                            akhd
+                            <!-- Action -->
+                        </td>
+                        <td style="width: 12%">
+                            Hậu kiểm
+                        </td>
+                    </tr>
+                    <tr class="page-break">
                         <td scope="row" style="vertical-align: middle; text-align: center; width: 3%">
                             <!-- key -->
                         </td>
