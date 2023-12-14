@@ -120,7 +120,7 @@ exports.getDataDefault = async (req, res) => {
         },
       },
       {
-        $sort: { DateTimeIn: -1 }, // Sắp xếp theo DateTimeIn giảm dần
+        $sort: { DateTimeOut: -1 }, // Sắp xếp theo DateTimeIn giảm dần
       },
       {
         $group: {
@@ -204,7 +204,6 @@ exports.getDataDefault = async (req, res) => {
     res.status(500).json({ message: 'Lấy thất bại', error: error.message });
   }
 }
-
 exports.getAllDataReport = async (req, res) => {
   try {
     const { fordCardID, fullName, cdsid, department, startDateTime, endDateTime, status, check } = req.body;
