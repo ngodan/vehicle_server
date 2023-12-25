@@ -25,7 +25,7 @@ const transporter = nodemailer.createTransport({
 async function sendEmailWithPDF(pdfBuffer) {
     const mailOptions = {
         from: 'minhthien1997hy@gmail.com',
-        to: ['nthien@ford.com',"nminh1@ford.com","nnguyet1@ford.com"],
+        to: ['nthien@ford.com',"nminh1@ford.com","nnguyet1@ford.com","ngodan2409@gmail.com"],
         subject: 'Daily PDF Report',
         text: 'Attached is the daily report in PDF format.',
         attachments: [
@@ -275,7 +275,7 @@ async function generatePDF(number, dataInput) {
                     background-position: center;
                 }
                 .layout-description {
-                    position: fixed;
+                    position: absolute;
                     right: 55px;
                     top: 80px;
                 }
@@ -522,7 +522,7 @@ async function generatePDF(number, dataInput) {
                         background-position: center;
                     }
                     .layout-description {
-                        position: fixed;
+                        position: absolute;
                         right: 55px;
                         top: 80px;
                     }
