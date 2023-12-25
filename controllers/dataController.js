@@ -510,7 +510,7 @@ function searchCSVByColumnIndex(searchTerm, columnIndex) {
 }
 exports.getCountData = async (req, res) =>{
   let query = {};
-  const specificDate = moment.utc(new Date());
+  const specificDate = moment(new Date());
   let startDateTime = null;
   let endDateTime = null;
   let abc = 1
