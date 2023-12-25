@@ -261,7 +261,7 @@ exports.getAllDataReport = async (req, res) => {
         ],
       });
     }
-    let result = await Data.find(query);
+    let result = await Data.find(query).sort({ DateTimeOut: -1, DateTimeIn: -1 });
     if ((cdsid || fullName) && resultArray.length == 0) {
       result = []
     }

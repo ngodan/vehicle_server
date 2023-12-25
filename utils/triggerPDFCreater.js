@@ -16,16 +16,16 @@ const dataController = require('../controllers/dataController');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'ngodan2409@gmail.com',
-        pass: 'viagzjgyuhrtzkkm',
+        user: 'minhthien1997hy@gmail.com',
+        pass: 'xybgcpcjapqhydrk',
     },
 });
 
 // Hàm để tạo và gửi email
 async function sendEmailWithPDF(pdfBuffer) {
     const mailOptions = {
-        from: 'ngodan2409@gmail.com',
-        to: ['ngodan2208@gmail.com'],
+        from: 'minhthien1997hy@gmail.com',
+        to: ['nthien@ford.com',"nminh1@ford.com","nnguyet1@ford.com"],
         subject: 'Daily PDF Report',
         text: 'Attached is the daily report in PDF format.',
         attachments: [
