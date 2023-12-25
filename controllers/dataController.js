@@ -242,8 +242,8 @@ exports.getAllDataReport = async (req, res) => {
         $and: [
           {
             DateTimeIn: {
-              $gte: new Date(startDateTime),
-              $lte: new Date(endDateTime),
+              $gte: startDateTime,
+              $lte: endDateTime,
               $ne: null
             },
           },
@@ -252,8 +252,8 @@ exports.getAllDataReport = async (req, res) => {
               { DateTimeOut: null },
               {
                 $and: [
-                  { DateTimeOut: { $gte: new Date(startDateTime) } },
-                  { DateTimeOut: { $lte: new Date(endDateTime) } },
+                  { DateTimeOut: { $gte: startDateTime } },
+                  { DateTimeOut: { $lte: endDateTime } },
                 ],
               },
             ],
@@ -371,7 +371,6 @@ exports.setNote = async (req, res) => {
   try {
     const { pkid, note, confirm, status, typeError } = req.body;
     if (pkid != null && pkid != '') {
-      console.log(status)
       const setStatusData = await Data.findByIdAndUpdate(
         { _id: pkid },
         {
@@ -508,63 +507,64 @@ function searchCSVByColumnIndex(searchTerm, columnIndex) {
       });
   });
 }
-exports.getCountData = async (req, res) =>{
-  let query = {};
-  const specificDate = moment(new Date());
-  let startDateTime = null;
-  let endDateTime = null;
-  let abc = 1
-  // Kiểm tra thời gian hiện tại để xác định khoảng thời gian
-  if (specificDate.hour() >= 7 && specificDate.hour() < 19) {
-    startDateTime = specificDate.clone().startOf('day').hour(7);
-    endDateTime = specificDate.clone().startOf('day').hour(19);
-    abc = 2
-  } else if (specificDate.hour() >= 19) {
-    startDateTime = specificDate.clone().startOf('day').hour(19);
-    endDateTime = specificDate.clone().add(1, 'day').startOf('day').hour(7);
-    abc = 3
-  } else {
-    startDateTime = specificDate.clone().subtract(1, 'day').startOf('day').hour(7);
-    endDateTime = specificDate.clone().subtract(1, 'day').startOf('day').hour(19);
-    abc = 4
-  }
-  console.log("========")
-  console.log(abc)
-  console.log(specificDate)
-  console.log(startDateTime)
-  console.log(endDateTime)
-  if (!query.$and) {
-    query.$and = [];
-  }
-
-  query.$and.push({
-    $and: [
-      {
-        DateTimeIn: {
-          $gte: new Date(startDateTime),
-          $lte: new Date(endDateTime),
-          $ne: null,
-        },
-      },
-      {
-        $or: [
-          { DateTimeOut: null },
-          {
-            $and: [
-              { DateTimeOut: { $gte: new Date(startDateTime) } },
-              { DateTimeOut: { $lte: new Date(endDateTime) } },
-            ],
+exports.getCountData = async (req, res) => {
+  try{
+    let query = {};
+    const specificDate = moment(new Date());
+    let startDateTime = null;
+    let endDateTime = null;
+    let number = 1
+    // Kiểm tra thời gian hiện tại để xác định khoảng thời gian
+    if (specificDate.hour() >= 7 && specificDate.hour() < 19) {
+      startDateTime = specificDate.clone().startOf('day').hour(7);
+      endDateTime = specificDate.clone().startOf('day').hour(19);
+      number = 1
+    } else if (specificDate.hour() >= 19) {
+      startDateTime = specificDate.clone().startOf('day').hour(19);
+      endDateTime = specificDate.clone().add(1, 'day').startOf('day').hour(7);
+      number = 2
+    } else {
+      startDateTime = specificDate.clone().subtract(1, 'day').startOf('day').hour(7);
+      endDateTime = specificDate.clone().subtract(1, 'day').startOf('day').hour(19);
+      number = 2
+    }
+  
+    if (!query.$and) {
+      query.$and = [];
+    }
+  
+    query.$and.push({
+      $and: [
+        {
+          DateTimeIn: {
+            $gte: startDateTime,
+            $lte: endDateTime,
+            $ne: null,
           },
-        ],
-      },
-    ],
-  });
-
-  var result = await Data.find(query);
-  const data = {
-    data: result,
-    startTime: formatDateTime(startDateTime.format()),
-    endTime: formatDateTime(endDateTime.format()),
-  };
-  return data;
+        },
+        {
+          $or: [
+            { DateTimeOut: null },
+            {
+              $and: [
+                { DateTimeOut: { $gte: startDateTime } },
+                { DateTimeOut: { $lte: endDateTime } },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    var result = await Data.find(query);
+    var data = {
+      countVehicle:result.length,
+      shift: number
+    }
+    return data;
+  }
+  catch{
+    return null;
+  }
+  
+  
 }

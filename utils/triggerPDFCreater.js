@@ -11,6 +11,7 @@ const { formatDateTime } = require('../utils/caculator');
 const sharp = require('sharp');
 const imagePathLocal = process.env.PATH_IMAGE.replace(/\\\\/g, '/');
 const imagePathZipLocal = process.env.PATH_IMAGE_ZIP.replace(/\\\\/g, '/');
+const dataController = require('../controllers/dataController');
 // Tạo transporter cho nodemailer
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -103,6 +104,7 @@ async function compressImage(inputPath, outputPath) {
 async function generatePDF(number, dataInput) {
     try {
         let data = []
+        const dataVehicle = await dataController.getCountData()
         let htmlContent = '';
         if (number != 3) {
             data = await getData(number);
@@ -272,7 +274,11 @@ async function generatePDF(number, dataInput) {
                     background-size: cover;
                     background-position: center;
                 }
-        
+                .layout-description {
+                    position: fixed;
+                    right: 55px;
+                    top: 80px;
+                }
                 @media print {
                     table {
                         page-break-inside: auto;
@@ -306,6 +312,7 @@ async function generatePDF(number, dataInput) {
             <body>
                 <div class="layout-area p-20">
                     <div class="layout-logo"><img src="http://localhost:3500/default/logo.png" alt=""></div>
+                    <div class="layout-description">${(dataVehicle != null ) ? `Số xe ra vào ca ${dataVehicle.shift} : <strong>${dataVehicle.countVehicle} xe</strong>` : "Số xe ra vào ca 0 : <strong>0 xe</strong>"}</div>
                     <div class="layout-title">
                         <h2 style="width: 100%;">BÁO CÁO CUỐI CA HỆ THỐNG QUẢN LÝ XE TỰ ĐỘNG</h2> 
                         <span>Từ ${data.startTime} đến ${data.endTime}</span> 
@@ -514,7 +521,11 @@ async function generatePDF(number, dataInput) {
                         background-size: cover;
                         background-position: center;
                     }
-            
+                    .layout-description {
+                        position: fixed;
+                        right: 55px;
+                        top: 80px;
+                    }
                     @media print {
                         table {
                             page-break-inside: auto;
@@ -548,6 +559,7 @@ async function generatePDF(number, dataInput) {
                 <body>
                     <div class="layout-area p-20">
                         <div class="layout-logo"><img src="http://localhost:3500/default/logo.png" alt=""></div>
+                        <div class="layout-description">${(dataVehicle != null ) ? `Số xe ra vào ca ${dataVehicle.shift} : <strong>${dataVehicle.countVehicle} xe</strong>` : "Số xe ra vào ca 0 : <strong>0 xe</strong>"}</div>
                         <div class="layout-title">
                             <h2 style="width: 100%;">BÁO CÁO CUỐI CA HỆ THỐNG QUẢN LÝ XE TỰ ĐỘNG</h2> 
                             <span>Từ ${data.startTime} đến ${data.endTime}</span> 
