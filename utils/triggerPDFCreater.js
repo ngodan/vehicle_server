@@ -727,7 +727,7 @@ async function generateTableBody(data, number) {
             ${(value._doc.Check == 1) ? "Đã kiểm" : "Hậu kiểm"}
             <!-- Action -->
          </td>
-            <td style="width: 7%">${value._doc.TypeOfError}</td>
+            <td style="width: 7%">${(value._doc.TypeOfError )?value._doc.TypeOfError : "" }</td>
             <td style="width: 13%">
                 ${value._doc.Rootcause}
                 <!-- Rootcause -->
@@ -845,7 +845,7 @@ async function generateTableBody(data, number) {
                     ${(value.Check == 1) ? "Đã kiểm" : "Hậu kiểm"}
                     <!-- Action -->
                 </td>
-                <td style="width: 7%">${value.TypeOfError}</td>
+                <td style="width: 7%">${(value.TypeOfError )?value.TypeOfError : "" }</td>
                 
                 <td style="width: 13%">
                     ${value.Rootcause}
