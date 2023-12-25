@@ -9,7 +9,7 @@
         .layout-title {
             text-align: center;
             padding: 0px 0px 30px 0px;
-            font-size: 25px;
+            font-size: 21px;
             font-weight: 600;
             display: flex;
             justify-content: center;
@@ -34,6 +34,7 @@
             font-size: 12px;
             border-spacing: 0px;
             border-bottom: none;
+            margin-top: 15px
         }
 
         table.table.table-bordered.table-main thead {
@@ -53,9 +54,25 @@
         }
 
         .data-bottom {
-            width: 100%;
             display: flex;
-            height: 100px;
+        }
+
+        td ul {
+            height: 100%;
+            display: block;
+            width: 100%;
+            padding: 0px;
+            margin: 0px;
+            display: grid;
+            grid-template-rows: repeat(4, 1fr);
+        }
+
+        td ul li {
+            display: flex;
+            margin-bottom: 0px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 5px;
         }
 
         .data-bottom img {
@@ -108,8 +125,43 @@
             background-size: cover;
         }
 
-        tbody tr td:last-child {
-            vertical-align: middle;
+        .grid-data {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            /* 4 cột với kích thước bằng nhau */
+            grid-template-rows: repeat(4, 60px);
+            /* 3 hàng với kích thước cố định là 100px */
+        }
+
+        .grid-data .data-infor {
+            grid-row: span 4;
+            padding: 10px;
+        }
+
+        .grid-data .data-top {
+            grid-column: span 2;
+            padding: 10px;
+        }
+
+        .grid-data .data-bottom {
+            grid-column: span 2;
+            grid-row: span 3;
+            padding: 0px 10px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        td ul li strong {
+            width: 100%;
+        }
+
+        td .data-bottom img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background-size: cover;
+            background-position: center;
         }
 
         @media print {
@@ -132,6 +184,11 @@
                 page-break-inside: avoid;
                 page-break-after: always;
             }
+
+            .grouped-tbody {
+                page-break-inside: avoid;
+                margin-top: 30px
+            }
         }
     </style>
 </head>
@@ -148,363 +205,108 @@
                 <thead class="thead-light">
                     <tr>
                         <th colspan="1" rowspan="2" style="width: 3%">STT</th>
-                        <th colspan="1" rowspan="2" style="width: 7%">Loại</th>
-                        <th colspan="1" rowspan="2" style="width: 15%">
-                            Thông tin nhân viên
-                        </th>
-                        <th colspan="2" rowspan="1" style="width: 23%">Thông tin vào</th>
-                        <th colspan="2" rowspan="1" style="width: 23%">Thông tin ra</th>
-                        <th colspan="1" rowspan="2" style="width: 12%">Nguyên nhân</th>
-                        <th colspan="1" rowspan="2" style="width: 12%">Hành động</th>
-                        <th colspan="1" rowspan="2" style="width: 12%">Trạng thái</th>
+                        <th colspan="3" rowspan="1" style="width: 30%">Thông tin vào</th>
+                        <th colspan="3" rowspan="1" style="width: 30%">Thông tin ra</th>
+                        <th colspan="1" rowspan="2" style="width: 9%">Loại lỗi</th>
+                        <th colspan="1" rowspan="2" style="width: 13%">Mô tả cụ thể lỗi</th>
+                        <th colspan="1" rowspan="2" style="width: 13%">Hành động</th>
+                        <th colspan="1" rowspan="2" style="width: 5%">Trạng thái</th>
                     </tr>
                     <tr>
-                        <th scope="col" style="width: 160px">Ngày</th>
-                        <th scope="col" style="width: 160px">Giờ</th>
-                        <th scope="col" style="width: 160px">Ngày</th>
-                        <th scope="col" style="width: 160px">Giờ</th>
+                        <th scope="col" style="width: 7%">Thông tin nhân viên</th>
+                        <th scope="col" style="width: 9%">Ngày</th>
+                        <th scope="col" style="width: 9%">Giờ</th>
+                        <th scope="col" style="width: 7%">Thông tin nhân viên</th>
+                        <th scope="col" style="width: 9%">Ngày</th>
+                        <th scope="col" style="width: 9%">Giờ</th>
                     </tr>
                 </thead>
 
-                <tbody>
+
+                <tbody class="grouped-tbody"></tbody>
+                <tbody class="grouped-tbody">
                     <tr>
                         <td scope="row" style="vertical-align: middle; text-align: center; width: 3%">
-                            <!-- key -->
+                            1
                         </td>
-                        <td style="width: 7%"></td>
-                        <td style="vertical-align: middle; width: 15%">
-                            <ul>
-                                <li>
-                                    Ford Card ID <br> <strong>831230123123</strong>
-                                </li>
-                                <li>
-                                    CDSID <br> <strong>391dhaks</strong>
-                                </li>
-                                <li>
-                                    Full name <br> <strong>Ngô Viét Đàn và tên dài</strong>
-                                </li>
-                                <li>
-                                    Department <br> <strong>Phòng vật tư</strong>
-                                </li>
-                            </ul>
-                        </td>
-                        <td colspan="2" style="width: 23%">
-                            <div class="data-top">
-                                <div class="data-top__item">
-                                    30/12/2023
-                                    <!-- Ngày vào -->
+                        <td colspan="3" style="width: 30% ;padding:0px">
+                            <div class="grid-data">
+                                <div class="data-infor">
+                                    <ul>
+                                        <li>
+                                            Ford Card ID:<strong>81429086144</strong>
+                                        </li>
+                                        <li>
+                                            CDSID: <strong>NQUAN5</strong>
+                                        </li>
+                                        <li>
+                                            Full name: <strong>Nguyen Van Quan</strong>
+                                        </li>
+                                        <li>
+                                            Department: <strong>MP&L</strong>
+                                        </li>
+                                    </ul>
                                 </div>
-                                <div class="data-top__item">
-                                    10:30
-                                    <!-- Giờ vào -->
+                                <div class="data-top">
+                                    <div class="data-top__item">
+                                        2023-12-24
+                                    </div>
+                                    <div class="data-top__item">
+                                        15:56:30
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="data-bottom">
-                                <img src="http://localhost:3500/images/1.jpg" alt="" />
-                                <!-- <div>Không có</div> -->
-                            </div>
-                        </td>
-                        <td colspan="2" style="width: 23%">
-                            <div class="data-top">
-                                <div class="data-top__item">
-                                    30/12/2023
+                                <div class="data-bottom">
 
-                                    <!-- Ngày ra -->
-                                </div>
-                                <div class="data-top__item">
-                                    10:30
-                                    <!-- Giờ ra -->
+                                    <img src="http://192.168.2.198:3500/images/20.jpg" alt="" />
                                 </div>
                             </div>
-                            <div class="data-bottom">
-                                <img src="http://localhost:3500/images/1.jpg" alt="" />
-                                <!-- <div>Không có</div> -->
-                            </div>
+
                         </td>
-                        <td style="width: 12%">
-                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
-                            akhd
+                        <td colspan="3" style="width: 30% ;padding:0px">
+                            <div class="grid-data">
+                                <div class="data-infor">
+                                    <ul>
+                                        <li>
+                                            Ford Card ID:<strong>Không có</strong>
+                                        </li>
+                                        <li>
+                                            CDSID: <strong>Không có</strong>
+                                        </li>
+                                        <li>
+                                            Full name: <strong>Không có</strong>
+                                        </li>
+                                        <li>
+                                            Department: <strong>Không có</strong>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="data-top">
+                                    <div class="data-top__item">
+                                        Không có
+                                    </div>
+                                    <div class="data-top__item">
+                                        Không có
+                                    </div>
+                                </div>
+                                <div class="data-bottom">
+                                    Không có
+                                </div>
+                            </div>
+
+                        </td>
+                        <td style="width: 7%">undefined</td>
+
+                        <td style="width: 13%">
+
                             <!-- Rootcause -->
                         </td>
-                        <td style="width: 12%">
-                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
-                            akhd
+                        <td style="width: 13%">
+
                             <!-- Action -->
                         </td>
                         <td style="width: 12%">
                             Hậu kiểm
-                        </td>
-                    </tr>
-                    <tr>
-                        <td scope="row" style="vertical-align: middle; text-align: center; width: 3%">
-                            <!-- key -->
-                        </td>
-                        <td style="width: 7%"></td>
-                        <td style="vertical-align: middle; width: 15%">
-                            <ul>
-                                <li>
-                                    Ford Card ID <br> <strong>831230123123</strong>
-                                </li>
-                                <li>
-                                    CDSID <br> <strong>391dhaks</strong>
-                                </li>
-                                <li>
-                                    Full name <br> <strong>Ngô Viét Đàn và tên dài</strong>
-                                </li>
-                                <li>
-                                    Department <br> <strong>Phòng vật tư</strong>
-                                </li>
-                            </ul>
-                        </td>
-                        <td colspan="2" style="width: 23%">
-                            <div class="data-top">
-                                <div class="data-top__item">
-                                    30/12/2023
-                                    <!-- Ngày vào -->
-                                </div>
-                                <div class="data-top__item">
-                                    10:30
-                                    <!-- Giờ vào -->
-                                </div>
-                            </div>
-                            <div class="data-bottom">
-                                <img src="http://localhost:3500/images/1.jpg" alt="" />
-                                <!-- <div>Không có</div> -->
-                            </div>
-                        </td>
-                        <td colspan="2" style="width: 23%">
-                            <div class="data-top">
-                                <div class="data-top__item">
-                                    30/12/2023
-
-                                    <!-- Ngày ra -->
-                                </div>
-                                <div class="data-top__item">
-                                    10:30
-                                    <!-- Giờ ra -->
-                                </div>
-                            </div>
-                            <div class="data-bottom">
-                                <img src="http://localhost:3500/images/1.jpg" alt="" />
-                                <!-- <div>Không có</div> -->
-                            </div>
-                        </td>
-                        <td style="width: 12%">
-                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
-                            akhd
-                            <!-- Rootcause -->
-                        </td>
-                        <td style="width: 12%">
-                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
-                            akhd
                             <!-- Action -->
-                        </td>
-                        <td style="width: 12%">
-                            Hậu kiểm
-                        </td>
-                    </tr>
-                    <tr>
-                        <td scope="row" style="vertical-align: middle; text-align: center; width: 3%">
-                            <!-- key -->
-                        </td>
-                        <td style="width: 7%"></td>
-                        <td style="vertical-align: middle; width: 15%">
-                            <ul>
-                                <li>
-                                    Ford Card ID <br> <strong>831230123123</strong>
-                                </li>
-                                <li>
-                                    CDSID <br> <strong>391dhaks</strong>
-                                </li>
-                                <li>
-                                    Full name <br> <strong>Ngô Viét Đàn và tên dài</strong>
-                                </li>
-                                <li>
-                                    Department <br> <strong>Phòng vật tư</strong>
-                                </li>
-                            </ul>
-                        </td>
-                        <td colspan="2" style="width: 23%">
-                            <div class="data-top">
-                                <div class="data-top__item">
-                                    30/12/2023
-                                    <!-- Ngày vào -->
-                                </div>
-                                <div class="data-top__item">
-                                    10:30
-                                    <!-- Giờ vào -->
-                                </div>
-                            </div>
-                            <div class="data-bottom">
-                                <img src="http://localhost:3500/images/1.jpg" alt="" />
-                                <!-- <div>Không có</div> -->
-                            </div>
-                        </td>
-                        <td colspan="2" style="width: 23%">
-                            <div class="data-top">
-                                <div class="data-top__item">
-                                    30/12/2023
-
-                                    <!-- Ngày ra -->
-                                </div>
-                                <div class="data-top__item">
-                                    10:30
-                                    <!-- Giờ ra -->
-                                </div>
-                            </div>
-                            <div class="data-bottom">
-                                <img src="http://localhost:3500/images/1.jpg" alt="" />
-                                <!-- <div>Không có</div> -->
-                            </div>
-                        </td>
-                        <td style="width: 12%">
-                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
-                            akhd
-                            <!-- Rootcause -->
-                        </td>
-                        <td style="width: 12%">
-                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
-                            akhd
-                            <!-- Action -->
-                        </td>
-                        <td style="width: 12%">
-                            Hậu kiểm
-                        </td>
-                    </tr>
-                    <tr>
-                        <td scope="row" style="vertical-align: middle; text-align: center; width: 3%">
-                            <!-- key -->
-                        </td>
-                        <td style="width: 7%"></td>
-                        <td style="vertical-align: middle; width: 15%">
-                            <ul>
-                                <li>
-                                    Ford Card ID <br> <strong>831230123123</strong>
-                                </li>
-                                <li>
-                                    CDSID <br> <strong>391dhaks</strong>
-                                </li>
-                                <li>
-                                    Full name <br> <strong>Ngô Viét Đàn và tên dài</strong>
-                                </li>
-                                <li>
-                                    Department <br> <strong>Phòng vật tư</strong>
-                                </li>
-                            </ul>
-                        </td>
-                        <td colspan="2" style="width: 23%">
-                            <div class="data-top">
-                                <div class="data-top__item">
-                                    30/12/2023
-                                    <!-- Ngày vào -->
-                                </div>
-                                <div class="data-top__item">
-                                    10:30
-                                    <!-- Giờ vào -->
-                                </div>
-                            </div>
-                            <div class="data-bottom">
-                                <img src="http://localhost:3500/images/1.jpg" alt="" />
-                                <!-- <div>Không có</div> -->
-                            </div>
-                        </td>
-                        <td colspan="2" style="width: 23%">
-                            <div class="data-top">
-                                <div class="data-top__item">
-                                    30/12/2023
-
-                                    <!-- Ngày ra -->
-                                </div>
-                                <div class="data-top__item">
-                                    10:30
-                                    <!-- Giờ ra -->
-                                </div>
-                            </div>
-                            <div class="data-bottom">
-                                <img src="http://localhost:3500/images/1.jpg" alt="" />
-                                <!-- <div>Không có</div> -->
-                            </div>
-                        </td>
-                        <td style="width: 12%">
-                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
-                            akhd
-                            <!-- Rootcause -->
-                        </td>
-                        <td style="width: 12%">
-                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
-                            akhd
-                            <!-- Action -->
-                        </td>
-                        <td style="width: 12%">
-                            Hậu kiểm
-                        </td>
-                    </tr>
-                    <tr class="page-break">
-                        <td scope="row" style="vertical-align: middle; text-align: center; width: 3%">
-                            <!-- key -->
-                        </td>
-                        <td style="width: 7%"></td>
-                        <td style="vertical-align: middle; width: 15%">
-                            <ul>
-                                <li>
-                                    Ford Card ID <br> <strong>831230123123</strong>
-                                </li>
-                                <li>
-                                    CDSID <br> <strong>391dhaks</strong>
-                                </li>
-                                <li>
-                                    Full name <br> <strong>Ngô Viét Đàn và tên dài</strong>
-                                </li>
-                                <li>
-                                    Department <br> <strong>Phòng vật tư</strong>
-                                </li>
-                            </ul>
-                        </td>
-                        <td colspan="2" style="width: 23%">
-                            <div class="data-top">
-                                <div class="data-top__item">
-                                    30/12/2023
-                                    <!-- Ngày vào -->
-                                </div>
-                                <div class="data-top__item">
-                                    10:30
-                                    <!-- Giờ vào -->
-                                </div>
-                            </div>
-                            <div class="data-bottom">
-                                <img src="http://localhost:3500/images/1.jpg" alt="" />
-                                <!-- <div>Không có</div> -->
-                            </div>
-                        </td>
-                        <td colspan="2" style="width: 23%">
-                            <div class="data-top">
-                                <div class="data-top__item">
-                                    30/12/2023
-
-                                    <!-- Ngày ra -->
-                                </div>
-                                <div class="data-top__item">
-                                    10:30
-                                    <!-- Giờ ra -->
-                                </div>
-                            </div>
-                            <div class="data-bottom">
-                                <img src="http://localhost:3500/images/1.jpg" alt="" />
-                                <!-- <div>Không có</div> -->
-                            </div>
-                        </td>
-                        <td style="width: 12%">
-                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
-                            akhd
-                            <!-- Rootcause -->
-                        </td>
-                        <td style="width: 12%">
-                            abakshdaskdsal' ká hd káh áhka hkd khá hjdashdashkd hsa hakhdahk áhka skhda khdahk sdashd
-                            akhd
-                            <!-- Action -->
-                        </td>
-                        <td style="width: 12%">
-                            Hậu kiểm
                         </td>
                     </tr>
                 </tbody>

@@ -23,9 +23,12 @@ app.use('/api/data', dataRoutes);
 // Serve images
 const currentDirectory = process.cwd();
 const imagePath = process.env.PATH_IMAGE.replace(/\\\\/g, '/');
+const imagePathZip = process.env.PATH_IMAGE_ZIP.replace(/\\\\/g, '/');
 const imageDirectory = path.join(imagePath);
+const imageDirectoryZip = path.join(imagePathZip);
 const uploadFolderPath = path.join(currentDirectory, 'upload/default');
 app.use('/images', express.static(imageDirectory));
+app.use('/zip', express.static(imageDirectoryZip));
 app.use('/default', express.static(uploadFolderPath));
 
 
@@ -82,20 +85,30 @@ io.on('connection', (socket) => {
 });
 
 
-cron.schedule('0 8,20 * * *', async () => {
+cron.schedule('0 8,18 * * *', async () => {
   const currentHour = new Date().getHours();
   if (currentHour === 8) {
     try {
-      await generatePDF(2);
-      console.log('PDF generated and email sent successfully!');
+      var result = await generatePDF(2);
+      if(result == "sent") console.log('PDF generated and email sent successfully!');
+      else console.log(result.message)
     } catch (error) {
       console.error('Error:', error);
     }
   }
-  else if(currentHour === 20){
+  // else if(currentHour === 20){
+  //   try {
+  //     await generatePDF(1);
+  //     console.log('PDF generated and email sent successfully!');
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //   }
+  // }
+  else{
     try {
-      await generatePDF(1);
-      console.log('PDF generated and email sent successfully!');
+      var result = await generatePDF(1);
+      if(result == "sent") console.log('PDF generated and email sent successfully!');
+      else console.log(result.message)
     } catch (error) {
       console.error('Error:', error);
     }

@@ -272,28 +272,46 @@ exports.getAllDataReport = async (req, res) => {
       if (item.ImageOut != null) {
         item.ImageOut = ip_server + item.ImageOut + '.jpg';
       }
-      const info = await searchCSVByColumnIndex(item.FordCardIDIn, 0);
+      const infoIn = (item.FordCardIDIn!='' && item.FordCardIDIn!=null) ? await searchCSVByColumnIndex(item.FordCardIDIn, 0) : [];
+      const infoOut = (item.FordCardIDOut!='' && item.FordCardIDOut!=null) ? await searchCSVByColumnIndex(item.FordCardIDOut, 0) : [];
 
-      if (info.length > 0) {
-        const data = Object.values(info[0]);
+      if (infoIn.length > 0 || infoOut.length > 0) {
         const updatedItem = {
           ...item,
           _doc: {
-            ...item._doc,
-            CdsidIn: data[1],
-            FullNameIn: data[2],
-            DepartmentIn: data[3],
+            ...(item._doc),
+            CdsidIn: undefined,
+            FullNameIn: undefined,
+            DepartmentIn: undefined,
+            CdsidOut: undefined,
+            FullNameOut: undefined,
+            DepartmentOut: undefined,
           },
         };
+
+        if (infoIn.length > 0) {
+          const dataIn = Object.values(infoIn[0]);
+          updatedItem._doc.CdsidIn = dataIn[1];
+          updatedItem._doc.FullNameIn = dataIn[2];
+          updatedItem._doc.DepartmentIn = dataIn[3];
+        }
+
+        if (infoOut.length > 0) {
+          const dataOut = Object.values(infoOut[0]);
+          updatedItem._doc.CdsidOut = dataOut[1];
+          updatedItem._doc.FullNameOut = dataOut[2];
+          updatedItem._doc.DepartmentOut = dataOut[3];
+        }
+
         return updatedItem;
       }
 
       return { ...item };
     });
-    
+
     const resolvedUpdatedResult = await Promise.all(updatedResult);
     globalDataReport = {
-      data : resolvedUpdatedResult,
+      data: resolvedUpdatedResult,
       startTime: formatDateTime(startDateTime),
       endTime: formatDateTime(endDateTime)
     };
@@ -352,6 +370,7 @@ exports.setNote = async (req, res) => {
   try {
     const { pkid, note, confirm, status, typeError } = req.body;
     if (pkid != null && pkid != '') {
+      console.log(status)
       const setStatusData = await Data.findByIdAndUpdate(
         { _id: pkid },
         {
@@ -372,8 +391,13 @@ exports.setNote = async (req, res) => {
 };
 exports.sendMail = async (req, res) => {
   try {
-    const result = await generatePDF(3,globalDataReport);
-    res.status(200).json({ message: 'Gửi mail thành công', data: result });
+    const result = await generatePDF(3, globalDataReport);
+    if(result == "sent"){
+      res.status(200).json({ message: 'Gửi mail thành công', data: result });
+    }
+    else{
+      res.status(500).json({ message: 'Lỗi khi gửi email' ,error: result.message  });
+    }
   } catch (error) {
     console.error('Lỗi khi gửi email:', error);
     res.status(500).json({ message: 'Lỗi khi gửi email', error: error.message });
