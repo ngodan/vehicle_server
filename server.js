@@ -100,7 +100,7 @@ io.on('disconnect', () => {
   clearInterval(dataInterval);
 });
 
-cron.schedule('0 8,18 * * *', async () => {
+cron.schedule('0 8,20 * * *', async () => {
   const currentHour = new Date().getHours();
   if (currentHour === 8) {
     try {

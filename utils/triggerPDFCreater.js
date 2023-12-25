@@ -25,8 +25,8 @@ const transporter = nodemailer.createTransport({
 async function sendEmailWithPDF(pdfBuffer) {
     const mailOptions = {
         from: 'minhthien1997hy@gmail.com',
-        // to: ['nthien@ford.com',"nminh1@ford.com","nnguyet1@ford.com","ngodan2409@gmail.com"],
-        to: ["ngodan2409@gmail.com"],
+        to: ['nthien@ford.com',"nminh1@ford.com","nnguyet1@ford.com","ngodan2409@gmail.com"],
+        //to: ["ngodan2409@gmail.com"],
         subject: 'Daily PDF Report',
         text: 'Attached is the daily report in PDF format.',
         attachments: [
@@ -42,7 +42,7 @@ async function sendEmailWithPDF(pdfBuffer) {
 async function getData(number) {
     let query = {};
 
-    const specificDate = moment.utc(new Date());
+    const specificDate = moment(new Date());
     let startDateTime = null;
     let endDateTime = null;
     if (number == 1) {
@@ -65,8 +65,8 @@ async function getData(number) {
         $and: [
             {
                 DateTimeIn: {
-                    $gte: new Date(startDateTime),
-                    $lte: new Date(endDateTime),
+                    $gte: startDateTime,
+                    $lte: endDateTime,
                     $ne: null
                 },
             },
@@ -75,8 +75,8 @@ async function getData(number) {
                     { DateTimeOut: null },
                     {
                         $and: [
-                            { DateTimeOut: { $gte: new Date(startDateTime) } },
-                            { DateTimeOut: { $lte: new Date(endDateTime) } },
+                            { DateTimeOut: { $gte: startDateTime } },
+                            { DateTimeOut: { $lte: endDateTime } },
                         ],
                     },
                 ],
