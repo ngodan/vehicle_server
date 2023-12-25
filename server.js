@@ -3,6 +3,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const http = require('http');
+const moment = require('moment-timezone');
 const socketIo = require('socket.io');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
@@ -68,11 +69,21 @@ db.once('open', async () => {
     console.error('Change stream error:', error);
   });
 });
-
+const dataCountVehicle = async () => {
+  try {
+    const data = await dataController.getCountData()
+    io.sockets.emit('vehicleData', data); // Gửi dữ liệu đến tất cả các kết nối
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
 db.on('error', (error) => {
   console.error('MongoDB connection error:', error);
 });
-
+const sendVehicleData = () => {
+  dataCountVehicle();
+};
+const dataInterval = setInterval(sendVehicleData, 5000);
 // Socket
 const server = http.createServer(app);
 const io = socketIo(server, { 
@@ -82,8 +93,12 @@ const io = socketIo(server, {
 
 io.on('connection', (socket) => {
   console.log('Client connected');
+  sendVehicleData();
 });
-
+io.on('disconnect', () => {
+  console.log('Client disconnected');
+  clearInterval(dataInterval);
+});
 
 cron.schedule('0 8,18 * * *', async () => {
   const currentHour = new Date().getHours();
@@ -119,3 +134,4 @@ const port = process.env.PORT_SERVER || 3500;
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+

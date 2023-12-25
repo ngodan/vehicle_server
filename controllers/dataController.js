@@ -7,6 +7,7 @@ const ip_server = 'http://' + process.env.IPSERVER + ":" + process.env.PORT_SERV
 const idPath = process.env.PATH_ID.replace(/\\\\/g, '/');
 const fs = require('fs');
 const csv = require('fast-csv');
+const moment = require('moment-timezone');
 const { generatePDF } = require('../utils/triggerPDFCreater');
 let globalDataReport = [];
 exports.getDataStream = async (req, res) => {
@@ -506,4 +507,64 @@ function searchCSVByColumnIndex(searchTerm, columnIndex) {
         reject(error);
       });
   });
+}
+exports.getCountData = async (req, res) =>{
+  let query = {};
+  const specificDate = moment.utc(new Date());
+  let startDateTime = null;
+  let endDateTime = null;
+  let abc = 1
+  // Kiểm tra thời gian hiện tại để xác định khoảng thời gian
+  if (specificDate.hour() >= 7 && specificDate.hour() < 19) {
+    startDateTime = specificDate.clone().startOf('day').hour(7);
+    endDateTime = specificDate.clone().startOf('day').hour(19);
+    abc = 2
+  } else if (specificDate.hour() >= 19) {
+    startDateTime = specificDate.clone().startOf('day').hour(19);
+    endDateTime = specificDate.clone().add(1, 'day').startOf('day').hour(7);
+    abc = 3
+  } else {
+    startDateTime = specificDate.clone().subtract(1, 'day').startOf('day').hour(7);
+    endDateTime = specificDate.clone().subtract(1, 'day').startOf('day').hour(19);
+    abc = 4
+  }
+  console.log("========")
+  console.log(abc)
+  console.log(specificDate)
+  console.log(startDateTime)
+  console.log(endDateTime)
+  if (!query.$and) {
+    query.$and = [];
+  }
+
+  query.$and.push({
+    $and: [
+      {
+        DateTimeIn: {
+          $gte: new Date(startDateTime),
+          $lte: new Date(endDateTime),
+          $ne: null,
+        },
+      },
+      {
+        $or: [
+          { DateTimeOut: null },
+          {
+            $and: [
+              { DateTimeOut: { $gte: new Date(startDateTime) } },
+              { DateTimeOut: { $lte: new Date(endDateTime) } },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+
+  var result = await Data.find(query);
+  const data = {
+    data: result,
+    startTime: formatDateTime(startDateTime.format()),
+    endTime: formatDateTime(endDateTime.format()),
+  };
+  return data;
 }

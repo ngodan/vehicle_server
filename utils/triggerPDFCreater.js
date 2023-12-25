@@ -621,7 +621,7 @@ async function generateTableBody(data, number) {
             for (const [index, value] of data.entries()) {
                 let compressedImagePathIn = '';
                 let compressedImagePathOut = '';
-                if(value._doc.ImageIn){
+                if(value._doc.ImageIn != null){
                     const imagePath = value._doc.ImageIn.split("/")
                     const imageName = imagePath[imagePath.length - 1]
                     const imageDirectory = path.join(imagePathLocal);
@@ -633,14 +633,14 @@ async function generateTableBody(data, number) {
                     await compressImage(inputImage, outputImage);
                     compressedImagePathIn = ip_server.replace("images","zip") + imageName
                 } 
-                if(value._doc.ImageOut){
-                    const imagePath = value._doc.ImageOut
+                if(value._doc.ImageOut != null){
+                    const imagePath = value._doc.ImageOut.split("/")
                     const imageName = imagePath[imagePath.length - 1]
-
-                    const inputImage = imagePathLocal + imageName;
-                    const outputImage = imagePathZipLocal + imageName
+                    const inputImage = imagePathLocal +  "\\" + imageName;
+                    const outputImage = imagePathZipLocal +  "\\" + imageName;
                     await compressImage(inputImage, outputImage);
                     compressedImagePathOut = ip_server.replace("images","zip") + imageName
+                    
                 } 
                
                 if (index % 2 === 0 && index != 0) {
@@ -846,7 +846,6 @@ async function generateTableBody(data, number) {
                     <!-- Action -->
                 </td>
                 <td style="width: 7%">${(value.TypeOfError )?value.TypeOfError : "" }</td>
-                
                 <td style="width: 13%">
                     ${value.Rootcause}
                     <!-- Rootcause -->
