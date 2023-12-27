@@ -53,6 +53,9 @@ async function getData(number) {
         startDateTime = specificDate.clone().subtract(1, 'day').startOf('day').hour(19);
         endDateTime = specificDate.clone().startOf('day').hour(7);
     }
+    console.log(specificDate)
+    console.log(startDateTime)
+    console.log(endDateTime)
     query.$or = [
         { Check: 1 }
         , { Check: 2 }
@@ -83,7 +86,34 @@ async function getData(number) {
             },
         ],
     });
-    var result = await Data.find(query);
+    const aggregationPipeline = [
+        { $match: query },
+        { $sort: { DateTimeIn: -1 } },
+        {
+            $group: {
+                _id: {
+                    FordCardIDIn: "$FordCardIDIn",
+                    hour: {
+                        $dateToString: {
+                            format: "%H",
+                            date: "$DateTimeIn",
+                        }
+                    }
+                },
+                count: { $sum: 1 },
+                latestRecord: { $first: "$$ROOT" }
+            }
+        },
+        {
+            $match: {
+                count: { $gt: 1 }
+            }
+        },
+        {
+            $replaceRoot: { newRoot: "$latestRecord" }
+        }
+    ];
+    var result = await Data.aggregate(aggregationPipeline);
     const data = {
         data: result,
         startTime: formatDateTime(startDateTime.format()),
@@ -675,7 +705,7 @@ async function generateTableBody(data, number) {
                 <div class="data-infor">
                   <ul>
                     <li>
-                      Ford Card ID:<strong>${(value._doc.FordCardIDIn) ? value._doc.FordCardIDIn : "Không có"}</strong>
+                      Card ID:<strong>${(value._doc.FordCardIDIn) ? value._doc.FordCardIDIn : "Không có"}</strong>
                     </li>
                     <li>
                       CDSID: <strong>${(value._doc.FordCardIDIn) ? value._doc.CdsidIn : "Không có"}</strong>
@@ -708,7 +738,7 @@ async function generateTableBody(data, number) {
               <div class="data-infor">
                 <ul>
                   <li>
-                    Ford Card ID:<strong>${(value._doc.FordCardIDOut) ? value._doc.FordCardIDOut : "Không có"}</strong>
+                    Card ID:<strong>${(value._doc.FordCardIDOut) ? value._doc.FordCardIDOut : "Không có"}</strong>
                   </li>
                   <li>
                     CDSID: <strong>${(value._doc.FordCardIDOut) ? value._doc.CdsidOut : "Không có"}</strong>
@@ -758,8 +788,33 @@ async function generateTableBody(data, number) {
     }
     else {
         if (data != null && data.length > 0) {
+
+            
             htmlBody += `<tbody class="grouped-tbody">`;
             for (const [index, value] of data.entries()) {
+                let compressedImagePathIn = '';
+                let compressedImagePathOut = '';
+                if(value.ImageIn != null){
+                    const imageName = value.ImageIn + ".jpg"
+                    const imageDirectory = path.join(imagePathLocal);
+                    const imageDirectoryZip = path.join(imagePathZipLocal);
+                    
+                    
+                    const inputImage = imageDirectory + "\\" + imageName;
+                    const outputImage = imageDirectoryZip +  "\\" + imageName;
+                    await compressImage(inputImage, outputImage);
+                    compressedImagePathIn = ip_server.replace("images","zip") + imageName
+                } 
+                if(value.ImageOut != null){
+                    const imageName = value.ImageIn + ".jpg"
+                    const inputImage = imagePathLocal +  "\\" + imageName;
+                    const outputImage = imagePathZipLocal +  "\\" + imageName;
+                    await compressImage(inputImage, outputImage);
+                    compressedImagePathOut = ip_server.replace("images","zip") + imageName
+                    
+                } 
+
+
                 let CdsidIn = '';
                 let FullNameIn = '';
                 let DepartmentIn = '';
@@ -795,7 +850,7 @@ async function generateTableBody(data, number) {
                   <div class="data-infor">
                     <ul>
                       <li>
-                        Ford Card ID:<strong>${(value.FordCardIDIn) ? value.FordCardIDIn : "Không có"}</strong>
+                        Card ID:<strong>${(value.FordCardIDIn) ? value.FordCardIDIn : "Không có"}</strong>
                       </li>
                       <li>
                         CDSID: <strong>${(value.FordCardIDIn) ? CdsidIn : "Không có"}</strong>
@@ -817,7 +872,7 @@ async function generateTableBody(data, number) {
                     </div>
                   </div>
                   <div class="data-bottom">
-                    ${(value.ImageIn == '' || value.ImageIn == null) ? "Không có" : `<img src="${ ip_server + value.ImageIn + '.jpg'}" alt="" />`}
+                  ${(!compressedImagePathIn) ? "Không có" : `<img src="${compressedImagePathIn}" alt="" />`}
                   </div>
                 </div>
                 
@@ -827,7 +882,7 @@ async function generateTableBody(data, number) {
                 <div class="data-infor">
                   <ul>
                     <li>
-                      Ford Card ID:<strong>${(value.FordCardIDOut) ? value.FordCardIDOut : "Không có"}</strong>
+                      Card ID:<strong>${(value.FordCardIDOut) ? value.FordCardIDOut : "Không có"}</strong>
                     </li>
                     <li>
                       CDSID: <strong>${(value.FordCardIDOut) ? CdsidOut : "Không có"}</strong>
@@ -849,7 +904,7 @@ async function generateTableBody(data, number) {
                   </div>
                 </div>
                 <div class="data-bottom">
-                  ${(value.ImageOut == '' || value.ImageOut == null) ? "Không có" : `<img src="${ ip_server + value.ImageOut + '.jpg'}" alt="" />`}
+                ${(!compressedImagePathOut) ? "Không có" : `<img src="${compressedImagePathOut}" alt="" />`}
                 </div>
               </div>
               

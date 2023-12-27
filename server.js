@@ -111,14 +111,6 @@ cron.schedule('0 8,20 * * *', async () => {
       console.error('Error:', error);
     }
   }
-  // else if(currentHour === 20){
-  //   try {
-  //     await generatePDF(1);
-  //     console.log('PDF generated and email sent successfully!');
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //   }
-  // }
   else{
     try {
       var result = await generatePDF(1);
