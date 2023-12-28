@@ -273,8 +273,8 @@ exports.getAllDataReport = async (req, res) => {
       if (item.ImageOut != null) {
         item.ImageOut = ip_server + item.ImageOut + '.jpg';
       }
-      const infoIn = (item.FordCardIDIn!='' && item.FordCardIDIn!=null) ? await searchCSVByColumnIndex(item.FordCardIDIn, 0) : [];
-      const infoOut = (item.FordCardIDOut!='' && item.FordCardIDOut!=null) ? await searchCSVByColumnIndex(item.FordCardIDOut, 0) : [];
+      const infoIn = (item.FordCardIDIn != '' && item.FordCardIDIn != null) ? await searchCSVByColumnIndex(item.FordCardIDIn, 0) : [];
+      const infoOut = (item.FordCardIDOut != '' && item.FordCardIDOut != null) ? await searchCSVByColumnIndex(item.FordCardIDOut, 0) : [];
 
       if (infoIn.length > 0 || infoOut.length > 0) {
         const updatedItem = {
@@ -323,6 +323,11 @@ exports.getAllDataReport = async (req, res) => {
   }
 }
 exports.createData = async (req, res) => { // TEST
+  const specificDateUtc = moment.utc();
+  const specificDateHCM = specificDateUtc.tz('Asia/Ho_Chi_Minh');
+  
+  const datetime = new Date((specificDateHCM.format().replace("+07:00","")));
+  console.log(datetime)
   try {
     const newData = new Data({
       LaneIn: getRndInteger(1, 7),
@@ -333,7 +338,7 @@ exports.createData = async (req, res) => { // TEST
       FordCardIDOut: '',
       MatchingCodeIn: `${getRndInteger(11111, 99999)}`,
       MatchingCodeOut: '',
-      DateTimeIn: new Date(),
+      DateTimeIn: datetime,
       DateTimeOut: null,
       Status: null,
       ImageIn: `${getRndInteger(1, 21)}`,
@@ -341,6 +346,7 @@ exports.createData = async (req, res) => { // TEST
       Check: 0,
       Rootcause: '',
       Action: '',
+      TypeOfError: '',
     });
 
     await newData.save();
@@ -391,12 +397,12 @@ exports.setNote = async (req, res) => {
 };
 exports.sendMail = async (req, res) => {
   try {
-    const result = await generatePDF(3, globalDataReport);
-    if(result == "sent"){
+    const result = await generatePDF(1, globalDataReport);
+    if (result == "sent") {
       res.status(200).json({ message: 'Gửi mail thành công', data: result });
     }
-    else{
-      res.status(500).json({ message: 'Lỗi khi gửi email' ,error: result.message  });
+    else {
+      res.status(500).json({ message: 'Lỗi khi gửi email', error: result.message });
     }
   } catch (error) {
     console.error('Lỗi khi gửi email:', error);
@@ -508,63 +514,71 @@ function searchCSVByColumnIndex(searchTerm, columnIndex) {
   });
 }
 exports.getCountData = async (req, res) => {
-  try{
+  try {
     let query = {};
     const specificDate = moment(new Date());
+    const specificDateUtc = moment.utc(new Date());
     let startDateTime = null;
     let endDateTime = null;
     let number = 1
     // Kiểm tra thời gian hiện tại để xác định khoảng thời gian
     if (specificDate.hour() >= 7 && specificDate.hour() < 19) {
-      startDateTime = specificDate.clone().startOf('day').hour(7);
-      endDateTime = specificDate.clone().startOf('day').hour(19);
+      startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
+      endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
       number = 1
     } else if (specificDate.hour() >= 19) {
-      startDateTime = specificDate.clone().startOf('day').hour(19);
-      endDateTime = specificDate.clone().add(1, 'day').startOf('day').hour(7);
+      startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
+      endDateTime = new Date(specificDateUtc.clone().add(1, 'day').startOf('day').hour(7));
       number = 2
     } else {
-      startDateTime = specificDate.clone().subtract(1, 'day').startOf('day').hour(7);
-      endDateTime = specificDate.clone().subtract(1, 'day').startOf('day').hour(19);
+      startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(7));
+      endDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(19));
       number = 2
     }
-  
-    if (!query.$and) {
-      query.$and = [];
-    }
-  
-    query.$and.push({
-      $and: [
+    query = {
+      $or: [
         {
-          DateTimeIn: {
-            $gte: startDateTime,
-            $lte: endDateTime,
-            $ne: null,
-          },
+          $and: [
+            {
+              DateTimeIn: {
+                $gte: startDateTime,
+                $lte: endDateTime,
+                $ne: null,
+              },
+            },
+          ],
         },
         {
-          $or: [
-            { DateTimeOut: null },
+          $and: [
             {
-              $and: [
-                { DateTimeOut: { $gte: startDateTime } },
-                { DateTimeOut: { $lte: endDateTime } },
-              ],
+              DateTimeIn: {
+                $gte: startDateTime,
+                $lte: endDateTime,
+              },
+              DateTimeOut: {
+                $gte: startDateTime,
+                $lte: endDateTime,
+                $ne: null,
+              },
             },
           ],
         },
       ],
-    });
-    var result = await Data.find(query);
+    };
+
+    const result = await Data.find(query);
+
     var data = {
-      countVehicle:result.length,
-      shift: number
-    }
-    return data;
+      countVehicleWithNullOut: result.filter(item => item.DateTimeIn != null).length,
+      countVehicleWithNotNullOut: result.filter(item => item.DateTimeOut != null).length,
+      shift: number,
+    };
+    return data
   }
-  catch{
+  catch (error) {
+    console.log(error)
     return null;
   }
-  
-  
+
+
 }

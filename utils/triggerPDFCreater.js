@@ -12,6 +12,17 @@ const sharp = require('sharp');
 const imagePathLocal = process.env.PATH_IMAGE.replace(/\\\\/g, '/');
 const imagePathZipLocal = process.env.PATH_IMAGE_ZIP.replace(/\\\\/g, '/');
 const dataController = require('../controllers/dataController');
+
+// Function to check if a path exists
+function isPathExists(path) {
+    try {
+        fs.accessSync(path, fs.constants.F_OK);
+        return true;
+    } catch (err) {
+        return false;
+    }
+}
+
 // Tạo transporter cho nodemailer
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -42,20 +53,17 @@ async function sendEmailWithPDF(pdfBuffer) {
 async function getData(number) {
     let query = {};
 
-    const specificDate = moment(new Date());
+    const specificDate = moment.utc(new Date());
     let startDateTime = null;
     let endDateTime = null;
     if (number == 1) {
-        startDateTime = specificDate.clone().startOf('day').hour(7);
-        endDateTime = specificDate.clone().startOf('day').hour(19);
+        startDateTime = new Date(specificDate.clone().startOf('day').hour(7));
+        endDateTime = new Date(specificDate.clone().startOf('day').hour(19));
     }
     else {
-        startDateTime = specificDate.clone().subtract(1, 'day').startOf('day').hour(19);
-        endDateTime = specificDate.clone().startOf('day').hour(7);
+        startDateTime = new Date(specificDate.clone().subtract(1, 'day').startOf('day').hour(19));
+        endDateTime = new Date(specificDate.clone().startOf('day').hour(7));
     }
-    console.log(specificDate)
-    console.log(startDateTime)
-    console.log(endDateTime)
     query.$or = [
         { Check: 1 }
         , { Check: 2 }
@@ -105,19 +113,14 @@ async function getData(number) {
             }
         },
         {
-            $match: {
-                count: { $gt: 1 }
-            }
-        },
-        {
             $replaceRoot: { newRoot: "$latestRecord" }
         }
     ];
     var result = await Data.aggregate(aggregationPipeline);
     const data = {
         data: result,
-        startTime: formatDateTime(startDateTime.format()),
-        endTime: formatDateTime(endDateTime.format())
+        startTime: formatDateTime(startDateTime),
+        endTime: formatDateTime(endDateTime)
     }
     return data
 }
@@ -343,7 +346,7 @@ async function generatePDF(number, dataInput) {
             <body>
                 <div class="layout-area p-20">
                     <div class="layout-logo"><img src="http://localhost:3500/default/logo.png" alt=""></div>
-                    <div class="layout-description">${(dataVehicle != null ) ? `Số xe ra vào ca ${dataVehicle.shift} : <strong>${dataVehicle.countVehicle} xe</strong>` : "Số xe ra vào ca 0 : <strong>0 xe</strong>"}</div>
+                    <div class="layout-description">${(dataVehicle != null ) ? `<div class="layout-description">Ca: ${ dataVehicle.shift } | Xe vào: <strong>${dataVehicle.countVehicleWithNullOut} </strong> | Xe ra: <strong>${dataVehicle.countVehicleWithNotNullOut} </strong></div>` : "Ca: 0 | Xe vào: <strong>0</strong> | Xe ra: <strong>0</strong>"}</div>
                     <div class="layout-title">
                         <h2 style="width: 100%;">BÁO CÁO CUỐI CA HỆ THỐNG QUẢN LÝ XE TỰ ĐỘNG</h2> 
                         <span>Từ ${data.startTime} đến ${data.endTime}</span> 
@@ -590,7 +593,7 @@ async function generatePDF(number, dataInput) {
                 <body>
                     <div class="layout-area p-20">
                         <div class="layout-logo"><img src="http://localhost:3500/default/logo.png" alt=""></div>
-                        <div class="layout-description">${(dataVehicle != null ) ? `Số xe ra vào ca ${dataVehicle.shift} : <strong>${dataVehicle.countVehicle} xe</strong>` : "Số xe ra vào ca 0 : <strong>0 xe</strong>"}</div>
+                        <div class="layout-description">${(dataVehicle != null ) ? `<div class="layout-description">Ca: ${ dataVehicle.shift } | Xe vào: <strong>${dataVehicle.countVehicleWithNullOut} </strong> | Xe ra: <strong>${dataVehicle.countVehicleWithNotNullOut} </strong></div>` : "Ca: 0 | Xe vào: <strong>0</strong> | Xe ra: <strong>0</strong>"}</div>
                         <div class="layout-title">
                             <h2 style="width: 100%;">BÁO CÁO CUỐI CA HỆ THỐNG QUẢN LÝ XE TỰ ĐỘNG</h2> 
                             <span>Từ ${data.startTime} đến ${data.endTime}</span> 
@@ -658,32 +661,35 @@ async function generatePDF(number, dataInput) {
 async function generateTableBody(data, number) {
     let htmlBody = '';
     let groupCounter = 0;
+    const imageDirectory = path.join(imagePathLocal);
+    const imageDirectoryZip = path.join(imagePathZipLocal);
     if (number == 3) {
         if (data != null && data.length > 0) {
             htmlBody += `<tbody class="grouped-tbody">`;
             for (const [index, value] of data.entries()) {
                 let compressedImagePathIn = '';
                 let compressedImagePathOut = '';
+                
                 if(value._doc.ImageIn != null){
                     const imagePath = value._doc.ImageIn.split("/")
                     const imageName = imagePath[imagePath.length - 1]
-                    const imageDirectory = path.join(imagePathLocal);
-                    const imageDirectoryZip = path.join(imagePathZipLocal);
                     
-                    
-                    const inputImage = imageDirectory + "\\" + imageName;
-                    const outputImage = imageDirectoryZip +  "\\" + imageName;
-                    await compressImage(inputImage, outputImage);
-                    compressedImagePathIn = ip_server.replace("images","zip") + imageName
+                    const inputImage = path.join(imageDirectory, imageName);
+                    if (isPathExists(inputImage)) {
+                        const outputImage = path.join(imageDirectoryZip, imageName);
+                        await compressImage(inputImage, outputImage);
+                        compressedImagePathIn = ip_server.replace("images", "zip") + imageName;
+                    }
                 } 
                 if(value._doc.ImageOut != null){
                     const imagePath = value._doc.ImageOut.split("/")
                     const imageName = imagePath[imagePath.length - 1]
-                    const inputImage = imagePathLocal +  "\\" + imageName;
-                    const outputImage = imagePathZipLocal +  "\\" + imageName;
-                    await compressImage(inputImage, outputImage);
-                    compressedImagePathOut = ip_server.replace("images","zip") + imageName
-                    
+                    const inputImage = path.join(imageDirectory, imageName);
+                    if (isPathExists(inputImage)) {
+                        const outputImage = path.join(imageDirectoryZip, imageName);
+                        await compressImage(inputImage, outputImage);
+                        compressedImagePathOut = ip_server.replace("images", "zip") + imageName;
+                    }
                 } 
                
                 if (index % 2 === 0 && index != 0) {
@@ -800,15 +806,15 @@ async function generateTableBody(data, number) {
                     const imageDirectoryZip = path.join(imagePathZipLocal);
                     
                     
-                    const inputImage = imageDirectory + "\\" + imageName;
-                    const outputImage = imageDirectoryZip +  "\\" + imageName;
+                    const inputImage = imageDirectory + "/" + imageName;
+                    const outputImage = imageDirectoryZip +  "/" + imageName;
                     await compressImage(inputImage, outputImage);
                     compressedImagePathIn = ip_server.replace("images","zip") + imageName
                 } 
                 if(value.ImageOut != null){
                     const imageName = value.ImageIn + ".jpg"
-                    const inputImage = imagePathLocal +  "\\" + imageName;
-                    const outputImage = imagePathZipLocal +  "\\" + imageName;
+                    const inputImage = imagePathLocal +  "/" + imageName;
+                    const outputImage = imagePathZipLocal +  "/" + imageName;
                     await compressImage(inputImage, outputImage);
                     compressedImagePathOut = ip_server.replace("images","zip") + imageName
                     
