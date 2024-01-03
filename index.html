@@ -26,6 +26,7 @@
 
         .layout-area.p-20 {
             padding: 20px;
+            position: relative;
         }
 
         table.table.table-bordered.table-main {
@@ -165,9 +166,13 @@
         }
 
         .layout-description {
-            position: fixed;
-            right: 55px;
-            top: 80px;
+            position: absolute;
+            right: 10px;
+            top: 35px;
+            display: flex;
+            width: 200px;
+            text-align: left;
+            justify-content: end;
         }
 
         @media print {
@@ -202,10 +207,12 @@
 <body>
     <div class="layout-area p-20">
         <div class="layout-logo"><img src="http://localhost:3500/default/logo.png" alt=""></div>
-        <div class="layout-description">Số xe ra vào ca 1 : <strong>2 xe</strong></div>
+        <div class="layout-description">
+            <div class="layout-description">Ca: 2 | Xe vào: <strong>0 </strong> | Xe ra: <strong>0 </strong></div>
+        </div>
         <div class="layout-title">
             <h2 style="width: 100%;">BÁO CÁO CUỐI CA HỆ THỐNG QUẢN LÝ XE TỰ ĐỘNG</h2>
-            <span>Từ 06:00 25/12/2023 đến 19:00 25/12/2023</span>
+            <span>Từ 06:00 25/12/2023 đến 19:00 03/01/2024</span>
         </div>
         <div class="layout-content">
             <table class="table table-bordered table-main">
@@ -241,7 +248,7 @@
                                 <div class="data-infor">
                                     <ul>
                                         <li>
-                                            Ford Card ID:<strong>81429086144</strong>
+                                            Card ID:<strong>81429086144</strong>
                                         </li>
                                         <li>
                                             CDSID: <strong>NQUAN5</strong>
@@ -259,11 +266,11 @@
                                         2023-12-25
                                     </div>
                                     <div class="data-top__item">
-                                        07:03:51
+                                        07:23:30
                                     </div>
                                 </div>
                                 <div class="data-bottom">
-                                    <img src="http://192.168.2.198:3500/zip/1.jpg" alt="" />
+                                    <img src="http://192.168.2.198:3500/zip/2.jpg" alt="" />
 
                                 </div>
                             </div>
@@ -274,7 +281,7 @@
                                 <div class="data-infor">
                                     <ul>
                                         <li>
-                                            Ford Card ID:<strong>Không có</strong>
+                                            Card ID:<strong>Không có</strong>
                                         </li>
                                         <li>
                                             CDSID: <strong>Không có</strong>
@@ -284,58 +291,6 @@
                                         </li>
                                         <li>
                                             Department: <strong>Không có</strong>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="data-top">
-                                    <div class="data-top__item">
-                                        Không có
-                                    </div>
-                                    <div class="data-top__item">
-                                        Không có
-                                    </div>
-                                </div>
-                                <div class="data-bottom">
-                                    Không có
-                                </div>
-                            </div>
-
-                        </td>
-
-                        <td style="width: 12%">
-                            Hậu kiểm
-                            <!-- Action -->
-                        </td>
-                        <td style="width: 7%"></td>
-                        <td style="width: 13%">
-
-                            <!-- Rootcause -->
-                        <td style="width: 13%">
-
-                            <!-- Action -->
-                        </td>
-
-
-                    </tr>
-                    <tr>
-                        <td scope="row" style="vertical-align: middle; text-align: center; width: 3%">
-                            2
-                        </td>
-                        <td colspan="3" style="width: 30% ;padding:0px">
-                            <div class="grid-data">
-                                <div class="data-infor">
-                                    <ul>
-                                        <li>
-                                            Ford Card ID:<strong>81429086144</strong>
-                                        </li>
-                                        <li>
-                                            CDSID: <strong>NQUAN5</strong>
-                                        </li>
-                                        <li>
-                                            Full name: <strong>Nguyen Van Quan</strong>
-                                        </li>
-                                        <li>
-                                            Department: <strong>MP&L</strong>
                                         </li>
                                     </ul>
                                 </div>
@@ -344,40 +299,7 @@
                                         2023-12-25
                                     </div>
                                     <div class="data-top__item">
-                                        07:03:52
-                                    </div>
-                                </div>
-                                <div class="data-bottom">
-                                    <img src="http://192.168.2.198:3500/zip/6.jpg" alt="" />
-
-                                </div>
-                            </div>
-
-                        </td>
-                        <td colspan="3" style="width: 30% ;padding:0px">
-                            <div class="grid-data">
-                                <div class="data-infor">
-                                    <ul>
-                                        <li>
-                                            Ford Card ID:<strong>Không có</strong>
-                                        </li>
-                                        <li>
-                                            CDSID: <strong>Không có</strong>
-                                        </li>
-                                        <li>
-                                            Full name: <strong>Không có</strong>
-                                        </li>
-                                        <li>
-                                            Department: <strong>Không có</strong>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div class="data-top">
-                                    <div class="data-top__item">
-                                        Không có
-                                    </div>
-                                    <div class="data-top__item">
-                                        Không có
+                                        07:23:30
                                     </div>
                                 </div>
                                 <div class="data-bottom">
@@ -393,10 +315,10 @@
                         </td>
                         <td style="width: 7%"></td>
                         <td style="width: 13%">
-
+                            cccccccccccccc
                             <!-- Rootcause -->
                         <td style="width: 13%">
-
+                            cccccc
                             <!-- Action -->
                         </td>
 
