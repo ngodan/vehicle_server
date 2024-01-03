@@ -27,15 +27,17 @@ function isPathExists(path) {
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'minhthien1997hy@gmail.com',
-        pass: 'xybgcpcjapqhydrk',
+        // user: 'minhthien1997hy@gmail.com',
+        // pass: 'xybgcpcjapqhydrk',
+        user: 'fvlsafety@gmail.com',
+        pass: 'ptzmwirippoiqgpb',
     },
 });
 
 // Hàm để tạo và gửi email
 async function sendEmailWithPDF(pdfBuffer) {
     const mailOptions = {
-        from: 'minhthien1997hy@gmail.com',
+        from: 'fvlsafety@gmail.com',
         to: ['nthien@ford.com',"nminh1@ford.com","nnguyet1@ford.com","ngodan2409@gmail.com"],
         //to: ["ngodan2409@gmail.com"],
         subject: 'Daily PDF Report',
