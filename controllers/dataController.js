@@ -210,6 +210,7 @@ exports.getAllDataReport = async (req, res) => {
     const { fordCardID, fullName, cdsid, department, startDateTime, endDateTime, status, check } = req.body;
     globalDataReport = []
     let fordCard = []
+    console.log(req.body)
     const resultArray = await searchAndGetCardIdByColumns(fullName, cdsid, department);
     if (resultArray.length > 0) fordCard = resultArray;
     if (fordCardID) {
@@ -233,6 +234,8 @@ exports.getAllDataReport = async (req, res) => {
     }
     //Query Datetime
     if (startDateTime && endDateTime) {
+      var startDate = moment.utc(startDateTime)
+      var endDate =  moment.utc(endDateTime)
       if (!query.$and) {
         query.$and = [];
       }
@@ -242,8 +245,8 @@ exports.getAllDataReport = async (req, res) => {
         $and: [
           {
             DateTimeIn: {
-              $gte: startDateTime,
-              $lte: endDateTime,
+              $gte: startDate,
+              $lte: endDate,
               $ne: null
             },
           },
@@ -252,8 +255,8 @@ exports.getAllDataReport = async (req, res) => {
               { DateTimeOut: null },
               {
                 $and: [
-                  { DateTimeOut: { $gte: startDateTime } },
-                  { DateTimeOut: { $lte: endDateTime } },
+                  { DateTimeOut: { $gte: startDate } },
+                  { DateTimeOut: { $lte: endDate } },
                 ],
               },
             ],
@@ -261,6 +264,7 @@ exports.getAllDataReport = async (req, res) => {
         ],
       });
     }
+    console.log(JSON.stringify(query))
     let result = await Data.find(query).sort({ DateTimeOut: -1, DateTimeIn: -1 });
     if ((cdsid || fullName) && resultArray.length == 0) {
       result = []
@@ -384,7 +388,6 @@ exports.setNote = async (req, res) => {
           Action: note,
           Status: status,
           TypeOfError: typeError,
-          Check: (status == "OK") ? 1 : 2
         },
         { new: true }
       );
@@ -565,7 +568,6 @@ exports.getCountData = async (req, res) => {
         },
       ],
     };
-
     const result = await Data.find(query);
 
     var data = {

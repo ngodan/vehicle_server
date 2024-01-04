@@ -405,201 +405,202 @@ async function generatePDF(number, dataInput) {
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <title>Document</title>
                     <style>
-        .layout-title {
-            text-align: center;
-            padding: 0px 0px 30px 0px;
-            font-size: 21px;
-            font-weight: 600;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-
-        }
-
-        .layout-title h2 {
-            padding: 0px;
-            margin: 0px;
-            margin-bottom: 10px;
-        }
-
-        .layout-area.p-20 {
-            padding: 20px;
-            position: relative;
-        }
-
-        table.table.table-bordered.table-main {
-            margin: 0 auto;
-            border: 1px solid #bfbfbf;
-            font-size: 12px;
-            border-spacing: 0px;
-            border-bottom: none;
-            margin-top: 15px
-        }
-
-        table.table.table-bordered.table-main thead {
-            background: #c7c7c7;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        ul {
-            padding: 0px;
-            margin: 0px;
-        }
-
-        ul li {
-            list-style: none;
-            margin-bottom: 10px;
-        }
-
-        .data-bottom {
-            display: flex;
-        }
-
-        td ul {
-            height: 100%;
-            display: block;
-            width: 100%;
-            padding: 0px;
-            margin: 0px;
-            display: grid;
-            grid-template-rows: repeat(4, 1fr);
-        }
-
-        td ul li {
-            display: flex;
-            margin-bottom: 0px;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 5px;
-        }
-
-        .data-bottom img {
-            width: 100%;
-            margin: 0 auto;
-            background-position: center;
-            background-size: cover;
-            object-fit: cover;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid #bfbfbf;
-        }
-
-        tbody tr td {
-            border-left: 1px solid #bfbfbf;
-            padding: 10px;
-            border-bottom: 1px solid #bfbfbf;
-            vertical-align: top;
-        }
-
-        thead tr th {
-            border-left: 1px solid #bfbfbf;
-            padding: 0px;
-            margin: 0px;
-            border-spacing: 0px !important;
-            background: antiquewhite;
-            border-bottom: 1px solid #bfbfbf;
-            /* border-top: 1px solid #bfbfbf; */
-        }
-
-        .data-top {
-            display: flex;
-            justify-content: space-around;
-        }
-
-        tbody tr>td:first-child {
-            border-left: none;
-        }
-
-        .layout-logo {
-            position: absolute;
-            width: 70px;
-        }
-
-        .layout-logo img {
-            width: 100%;
-            height: 100%;
-            background-position: center;
-            background-size: cover;
-        }
-
-        .grid-data {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            /* 4 cột với kích thước bằng nhau */
-            grid-template-rows: repeat(4, 60px);
-            /* 3 hàng với kích thước cố định là 100px */
-        }
-
-        .grid-data .data-infor {
-            grid-row: span 4;
-            padding: 10px;
-        }
-
-        .grid-data .data-top {
-            grid-column: span 2;
-            padding: 10px;
-        }
-
-        .grid-data .data-bottom {
-            grid-column: span 2;
-            grid-row: span 3;
-            padding: 0px 10px 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        td ul li strong {
-            width: 100%;
-        }
-
-        td .data-bottom img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            background-size: cover;
-            background-position: center;
-        }
-
-        .layout-description {
-            position: absolute;
-            right: 10px;
-            top: 35px;
-            display: flex;
-            width: 200px;
-            text-align: left;
-            justify-content: end;
-        }
-
-        @media print {
-            table {
-                page-break-inside: auto;
-            }
-
-            table,
-            tr,
-            td {
-                border-collapse: collapse;
-            }
-
-            td {
-                padding: 10px;
-                border: 1px solid #bfbfbf;
-            }
-
-            .page-break {
-                page-break-inside: avoid;
-                page-break-after: always;
-            }
-
-            .grouped-tbody {
-                page-break-inside: avoid;
-                margin-top: 30px
-            }
-        }
+                    <style>
+                    .layout-title {
+                        text-align: center;
+                        padding: 0px 0px 30px 0px;
+                        font-size: 21px;
+                        font-weight: 600;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        flex-wrap: wrap;
+            
+                    }
+            
+                    .layout-title h2 {
+                        padding: 0px;
+                        margin: 0px;
+                        margin-bottom: 10px;
+                    }
+            
+                    .layout-area.p-20 {
+                        padding: 20px;
+                        position: relative;
+                    }
+            
+                    table.table.table-bordered.table-main {
+                        margin: 0 auto;
+                        border: 1px solid #bfbfbf;
+                        font-size: 12px;
+                        border-spacing: 0px;
+                        border-bottom: none;
+                        margin-top: 15px
+                    }
+            
+                    table.table.table-bordered.table-main thead {
+                        background: #c7c7c7;
+                        font-size: 14px;
+                        font-weight: 600;
+                    }
+            
+                    ul {
+                        padding: 0px;
+                        margin: 0px;
+                    }
+            
+                    ul li {
+                        list-style: none;
+                        margin-bottom: 10px;
+                    }
+            
+                    .data-bottom {
+                        display: flex;
+                    }
+            
+                    td ul {
+                        height: 100%;
+                        display: block;
+                        width: 100%;
+                        padding: 0px;
+                        margin: 0px;
+                        display: grid;
+                        grid-template-rows: repeat(4, 1fr);
+                    }
+            
+                    td ul li {
+                        display: flex;
+                        margin-bottom: 0px;
+                        align-items: center;
+                        flex-wrap: wrap;
+                        margin-bottom: 5px;
+                    }
+            
+                    .data-bottom img {
+                        width: 100%;
+                        margin: 0 auto;
+                        background-position: center;
+                        background-size: cover;
+                        object-fit: cover;
+                    }
+            
+                    tbody tr {
+                        border-bottom: 1px solid #bfbfbf;
+                    }
+            
+                    tbody tr td {
+                        border-left: 1px solid #bfbfbf;
+                        padding: 10px;
+                        border-bottom: 1px solid #bfbfbf;
+                        vertical-align: top;
+                    }
+            
+                    thead tr th {
+                        border-left: 1px solid #bfbfbf;
+                        padding: 0px;
+                        margin: 0px;
+                        border-spacing: 0px !important;
+                        background: antiquewhite;
+                        border-bottom: 1px solid #bfbfbf;
+                        /* border-top: 1px solid #bfbfbf; */
+                    }
+            
+                    .data-top {
+                        display: flex;
+                        justify-content: space-around;
+                    }
+            
+                    tbody tr>td:first-child {
+                        border-left: none;
+                    }
+            
+                    .layout-logo {
+                        position: absolute;
+                        width: 70px;
+                    }
+            
+                    .layout-logo img {
+                        width: 100%;
+                        height: 100%;
+                        background-position: center;
+                        background-size: cover;
+                    }
+            
+                    .grid-data {
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        /* 4 cột với kích thước bằng nhau */
+                        grid-template-rows: repeat(4, 60px);
+                        /* 3 hàng với kích thước cố định là 100px */
+                    }
+            
+                    .grid-data .data-infor {
+                        grid-row: span 4;
+                        padding: 10px;
+                    }
+            
+                    .grid-data .data-top {
+                        grid-column: span 2;
+                        padding: 10px;
+                    }
+            
+                    .grid-data .data-bottom {
+                        grid-column: span 2;
+                        grid-row: span 3;
+                        padding: 0px 10px 10px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+            
+                    td ul li strong {
+                        width: 100%;
+                    }
+            
+                    td .data-bottom img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        background-size: cover;
+                        background-position: center;
+                    }
+            
+                    .layout-description {
+                        position: absolute;
+                        right: 10px;
+                        top: 35px;
+                        display: flex;
+                        width: 200px;
+                        text-align: left;
+                        justify-content: end;
+                    }
+            
+                    @media print {
+                        table {
+                            page-break-inside: auto;
+                        }
+            
+                        table,
+                        tr,
+                        td {
+                            border-collapse: collapse;
+                        }
+            
+                        td {
+                            padding: 10px;
+                            border: 1px solid #bfbfbf;
+                        }
+            
+                        .page-break {
+                            page-break-inside: avoid;
+                            page-break-after: always;
+                        }
+            
+                        .grouped-tbody {
+                            page-break-inside: avoid;
+                            margin-top: 30px
+                        }
+                    }
     </style>
                 </head>
                 
@@ -735,6 +736,9 @@ async function generateTableBody(data, number) {
                     <li>
                       Department: <strong>${(value._doc.FordCardIDIn) ? value._doc.DepartmentIn : "Không có"}</strong>
                     </li>
+                    <li>
+                        License Plate: <strong>${(value._doc.LicensePlateIn) ? value._doc.LicensePlateIn : "Không có"}</strong>
+                    </li>
                   </ul>
                 </div>
                 <div class="data-top">
@@ -768,6 +772,9 @@ async function generateTableBody(data, number) {
                   <li>
                     Department: <strong>${(value._doc.FordCardIDOut) ? value._doc.DepartmentOut : "Không có"}</strong>
                   </li>
+                  <li>
+                        License Plate: <strong>${(value._doc.LicensePlateOut) ? value._doc.LicensePlateOut : "Không có"}</strong>
+                    </li>
                 </ul>
               </div>
               <div class="data-top">
@@ -880,6 +887,9 @@ async function generateTableBody(data, number) {
                       <li>
                         Department: <strong>${(value.FordCardIDIn) ? DepartmentIn : "Không có"}</strong>
                       </li>
+                      <li>
+                        License Plate: <strong>${(value.LicensePlateIn) ? value.LicensePlateIn : "Không có"}</strong>
+                    </li>
                     </ul>
                   </div>
                   <div class="data-top">
@@ -912,6 +922,9 @@ async function generateTableBody(data, number) {
                     <li>
                       Department: <strong>${(value.FordCardIDOut) ? DepartmentOut : "Không có"}</strong>
                     </li>
+                    <li>
+                    License Plate: <strong>${(value.LicensePlateOut) ? value.LicensePlateOut : "Không có"}</strong>
+                </li>
                   </ul>
                 </div>
                 <div class="data-top">
