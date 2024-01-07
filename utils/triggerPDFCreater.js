@@ -140,9 +140,10 @@ async function compressImage(inputPath, outputPath) {
 async function generatePDF(number, dataInput) {
     try {
         let data = []
-        const dataVehicle = await dataController.getCountData()
+        
         let htmlContent = '';
         if (number != 3) {
+            const dataVehicle = await dataController.getCountData(1)
             data = await getData(number);
             htmlContent = `<!DOCTYPE html>
             <html lang="en">
@@ -395,6 +396,7 @@ async function generatePDF(number, dataInput) {
                 </html>`;
         }
         else {
+            const dataVehicle = await dataController.getCountData(2)
             data = dataInput
 
             htmlContent = `<!DOCTYPE html>

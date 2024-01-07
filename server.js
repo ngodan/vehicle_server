@@ -71,7 +71,7 @@ db.once('open', async () => {
 });
 const dataCountVehicle = async () => {
   try {
-    const data = await dataController.getCountData()
+    const data = await dataController.getCountData(1)
     io.sockets.emit('vehicleData', data); // Gửi dữ liệu đến tất cả các kết nối
   } catch (error) {
     console.error('Error fetching data:', error);
