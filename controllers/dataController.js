@@ -598,3 +598,86 @@ exports.getCountData = async (type,req, res) => {
 
 
 }
+exports.getCountDataFunc = async (type,req, res) => {
+  try {
+    let query = {};
+    const specificDate = moment(new Date());
+    const specificDateUtc = moment.utc(new Date());
+    let startDateTime = null;
+    let endDateTime = null;
+    let number = 1
+    console.log(type)
+    if(type == 1){
+      if (specificDate.hour() >= 7 && specificDate.hour() < 19) {
+        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
+        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
+        number = 1
+      } else if (specificDate.hour() >= 19) {
+        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
+        endDateTime = new Date(specificDateUtc.clone().add(1, 'day').startOf('day').hour(7));
+        number = 2
+      } else {
+        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(7));
+        endDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(19));
+        number = 2
+      }
+    }
+    else{
+      if (specificDate.hour() == 20) {
+        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
+        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
+        number = 1
+      } else {
+        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
+        endDateTime = new Date(specificDateUtc.clone().add(1, 'day').startOf('day').hour(7));
+        number = 2
+      }
+    }
+    // Kiểm tra thời gian hiện tại để xác định khoảng thời gian
+    
+    query = {
+      $or: [
+        {
+          $and: [
+            {
+              DateTimeIn: {
+                $gte: startDateTime,
+                $lte: endDateTime,
+                $ne: null,
+              },
+            },
+          ],
+        },
+        {
+          $and: [
+            {
+              DateTimeIn: {
+                $gte: startDateTime,
+                $lte: endDateTime,
+              },
+              DateTimeOut: {
+                $gte: startDateTime,
+                $lte: endDateTime,
+                $ne: null,
+              },
+            },
+          ],
+        },
+      ],
+    };
+    const result = await Data.find(query);
+
+    var data = {
+      countVehicleWithNullOut: result.filter(item => item.DateTimeIn != null).length,
+      countVehicleWithNotNullOut: result.filter(item => item.DateTimeOut != null).length,
+      shift: number,
+    };
+    return data
+  }
+  catch (error) {
+    console.log(error)
+    return null;
+  }
+
+
+}

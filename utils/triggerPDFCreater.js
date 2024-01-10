@@ -143,7 +143,7 @@ async function generatePDF(number, dataInput) {
         
         let htmlContent = '';
         if (number != 3) {
-            const dataVehicle = await dataController.getCountData(1)
+            const dataVehicle = await dataController.getCountDataFunc(2)
             data = await getData(number);
             htmlContent = `<!DOCTYPE html>
             <html lang="en">
@@ -396,7 +396,7 @@ async function generatePDF(number, dataInput) {
                 </html>`;
         }
         else {
-            const dataVehicle = await dataController.getCountData(2)
+            const dataVehicle = await dataController.getCountDataFunc(1)
             data = dataInput
 
             htmlContent = `<!DOCTYPE html>
