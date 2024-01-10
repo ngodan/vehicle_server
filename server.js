@@ -102,16 +102,7 @@ io.on('disconnect', () => {
 
 cron.schedule('0 8,20 * * *', async () => {
   const currentHour = new Date().getHours();
-  if (currentHour === 8) {
-    try {
-      var result = await generatePDF(2);
-      if(result == "sent") console.log('PDF generated and email sent successfully!');
-      else console.log(result.message)
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  }
-  else{
+  if (currentHour == 20){
     try {
       var result = await generatePDF(1);
       if(result == "sent") console.log('PDF generated and email sent successfully!');
@@ -120,6 +111,16 @@ cron.schedule('0 8,20 * * *', async () => {
       console.error('Error:', error);
     }
   }
+  else{
+    try {
+      var result = await generatePDF(2);
+      if(result == "sent") console.log('PDF generated and email sent successfully!');
+      else console.log(result.message)
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+  
 })
 // Start server
 const port = process.env.PORT_SERVER || 3500;

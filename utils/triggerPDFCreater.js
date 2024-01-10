@@ -55,6 +55,7 @@ async function sendEmailWithPDF(pdfBuffer) {
 async function getData(number) {
     let query = {};
 
+    console.log(number)
     const specificDate = moment.utc(new Date());
     let startDateTime = null;
     let endDateTime = null;

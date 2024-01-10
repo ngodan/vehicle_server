@@ -534,8 +534,8 @@ exports.getCountData = async (type,req, res) => {
         endDateTime = new Date(specificDateUtc.clone().add(1, 'day').startOf('day').hour(7));
         number = 2
       } else {
-        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(7));
-        endDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(19));
+        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(19));
+        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
         number = 2
       }
     }
@@ -545,11 +545,13 @@ exports.getCountData = async (type,req, res) => {
         endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
         number = 1
       } else {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
-        endDateTime = new Date(specificDateUtc.clone().add(1, 'day').startOf('day').hour(7));
+        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(19));
+        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
         number = 2
       }
     }
+    // console.log(startDateTime)
+    // console.log(endDateTime)
     // Kiểm tra thời gian hiện tại để xác định khoảng thời gian
     
     query = {
@@ -606,7 +608,6 @@ exports.getCountDataFunc = async (type,req, res) => {
     let startDateTime = null;
     let endDateTime = null;
     let number = 1
-    console.log(type)
     if(type == 1){
       if (specificDate.hour() >= 7 && specificDate.hour() < 19) {
         startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
@@ -628,8 +629,8 @@ exports.getCountDataFunc = async (type,req, res) => {
         endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
         number = 1
       } else {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
-        endDateTime = new Date(specificDateUtc.clone().add(1, 'day').startOf('day').hour(7));
+        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(19));
+        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
         number = 2
       }
     }
