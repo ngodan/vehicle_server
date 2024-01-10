@@ -834,7 +834,7 @@ async function generateTableBody(data, number) {
                     compressedImagePathIn = ip_server.replace("images", "zip") + imageName
                 }
                 if (value.ImageOut != null) {
-                    const imageName = value.ImageIn + ".jpg"
+                    const imageName = value.ImageOut + ".jpg"
                     const inputImage = imagePathLocal + "/" + imageName;
                     const outputImage = imagePathZipLocal + "/" + imageName;
                     await compressImage(inputImage, outputImage);

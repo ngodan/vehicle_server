@@ -400,7 +400,7 @@ exports.setNote = async (req, res) => {
 };
 exports.sendMail = async (req, res) => {
   try {
-    const result = await generatePDF(3, globalDataReport);
+    const result = await generatePDF(1, globalDataReport);
     if (result == "sent") {
       res.status(200).json({ message: 'Gửi mail thành công', data: result });
     }
@@ -540,7 +540,7 @@ exports.getCountData = async (type,req, res) => {
       }
     }
     else{
-      if (specificDate.hour() > 7) {
+      if (specificDate.hour() == 20) {
         startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
         endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
         number = 1
