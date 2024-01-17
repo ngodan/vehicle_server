@@ -35,16 +35,16 @@ const transporter = nodemailer.createTransport({
 });
 
 // Hàm để tạo và gửi email
-async function sendEmailWithPDF(pdfBuffer) {
+async function sendEmailWithPDF(pdfBuffer,titleData) {
     const mailOptions = {
         from: 'fvlsafety@gmail.com',
         to: ['nthien@ford.com',"nminh1@ford.com","nnguyet1@ford.com","vhung1@ford.com","securi25@ford.com"],
         //to: ["ngodan2409@gmail.com"],
-        subject: 'Daily PDF Report',
+        subject: `Báo cáo eVMS: Ca ${titleData.shift} - Ngày ${titleData.day} `,
         text: 'Attached is the daily report in PDF format.',
         attachments: [
             {
-                filename: 'daily_report.pdf',
+                filename: 'eVMS_daily_report.pdf',
                 content: pdfBuffer,
             },
         ],
@@ -60,17 +60,16 @@ async function getData(number) {
     let startDateTime = null;
     let endDateTime = null;
     if (number == 1) {
-        startDateTime = new Date(specificDate.clone().startOf('day').hour(7));
-        endDateTime = new Date(specificDate.clone().startOf('day').hour(19));
+        startDateTime = new Date(specificDate.clone().startOf('day').hour(5));
+        endDateTime = new Date(specificDate.clone().startOf('day').hour(17));
     }
     else {
-        startDateTime = new Date(specificDate.clone().subtract(1, 'day').startOf('day').hour(19));
-        endDateTime = new Date(specificDate.clone().startOf('day').hour(7));
+        startDateTime = new Date(specificDate.clone().subtract(1, 'day').startOf('day').hour(17));
+        endDateTime = new Date(specificDate.clone().startOf('day').hour(5));
     }
     query.$or = [
         { Check: 1 }
         , { Check: 2 }
-        , { Check: 0, $or: [{ LicensePlateIn: { $ne: null }, LicensePlateOut: null }, { LicensePlateOut: { $ne: null }, LicensePlateIn: null }] }
     ];
     if (!query.$and) {
         query.$and = [];
@@ -83,18 +82,7 @@ async function getData(number) {
                     $lte: endDateTime,
                     $ne: null
                 },
-            },
-            {
-                $or: [
-                    { DateTimeOut: null },
-                    {
-                        $and: [
-                            { DateTimeOut: { $gte: startDateTime } },
-                            { DateTimeOut: { $lte: endDateTime } },
-                        ],
-                    },
-                ],
-            },
+            }
         ],
     });
     const aggregationPipeline = [
@@ -141,7 +129,10 @@ async function compressImage(inputPath, outputPath) {
 async function generatePDF(number, dataInput) {
     try {
         let data = []
-        
+        let titleData = {
+            shift: "",
+            day: ""
+        }
         let htmlContent = '';
         if (number != 3) {
             const dataVehicle = await dataController.getCountDataFunc(2)
@@ -385,6 +376,8 @@ async function generatePDF(number, dataInput) {
             
                             
             `
+            titleData.shift = dataVehicle.shift
+            titleData.day = data.startTime.split(" ")[1];
             var html = await generateTableBody(data.data, 1)
 
             htmlContent += html
@@ -640,6 +633,8 @@ async function generatePDF(number, dataInput) {
                 
                                 
                 `
+            titleData.shift = dataVehicle.shift
+            titleData.day = data.startTime.split(" ")[1];
             var html = await generateTableBody(data.data, 3)
 
             htmlContent += html
@@ -665,7 +660,7 @@ async function generatePDF(number, dataInput) {
                 top: '32px',
             },
         });
-        await sendEmailWithPDF(pdfBuffer);
+        await sendEmailWithPDF(pdfBuffer,titleData);
         await browser.close();
         return "sent"
     }
@@ -678,6 +673,7 @@ async function generatePDF(number, dataInput) {
 async function generateTableBody(data, number) {
     let htmlBody = '';
     let groupCounter = 0;
+
     const imageDirectory = path.join(imagePathLocal);
     const imageDirectoryZip = path.join(imagePathZipLocal);
     if (number == 3) {

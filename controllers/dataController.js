@@ -401,6 +401,7 @@ exports.setNote = async (req, res) => {
 exports.sendMail = async (req, res) => {
   try {
     const result = await generatePDF(3, globalDataReport);
+    //const result = await generatePDF(1);
     if (result == "sent") {
       res.status(200).json({ message: 'Gửi mail thành công', data: result });
     }
@@ -525,28 +526,28 @@ exports.getCountData = async (type,req, res) => {
     let endDateTime = null;
     let number = 1
     if(type == 1){
-      if (specificDate.hour() >= 7 && specificDate.hour() < 19) {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
+      if (specificDate.hour() >= 5 && specificDate.hour() < 17) {
+        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
+        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(17));
         number = 1
-      } else if (specificDate.hour() >= 19) {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
-        endDateTime = new Date(specificDateUtc.clone().add(1, 'day').startOf('day').hour(7));
+      } else if (specificDate.hour() >= 17) {
+        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(17));
+        endDateTime = new Date(specificDateUtc.clone().add(1, 'day').startOf('day').hour(5));
         number = 2
       } else {
-        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(19));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
+        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(17));
+        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
         number = 2
       }
     }
     else{
       if (specificDate.hour() == 20) {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
+        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
+        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(17));
         number = 1
       } else {
-        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(19));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
+        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(17));
+        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
         number = 2
       }
     }
@@ -609,28 +610,28 @@ exports.getCountDataFunc = async (type,req, res) => {
     let endDateTime = null;
     let number = 1
     if(type == 1){
-      if (specificDate.hour() >= 7 && specificDate.hour() < 19) {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
+      if (specificDate.hour() >= 5 && specificDate.hour() < 17) {
+        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
+        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(17));
         number = 1
-      } else if (specificDate.hour() >= 19) {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
-        endDateTime = new Date(specificDateUtc.clone().add(1, 'day').startOf('day').hour(7));
+      } else if (specificDate.hour() >= 17) {
+        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(17));
+        endDateTime = new Date(specificDateUtc.clone().add(1, 'day').startOf('day').hour(5));
         number = 2
       } else {
-        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(7));
-        endDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(19));
+        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(17));
+        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
         number = 2
       }
     }
     else{
       if (specificDate.hour() == 20) {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(19));
+        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
+        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(17));
         number = 1
       } else {
-        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(19));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(7));
+        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(17));
+        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
         number = 2
       }
     }
