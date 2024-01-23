@@ -126,5 +126,6 @@ cron.schedule('0 8,20 * * *', async () => {
 const port = process.env.PORT_SERVER || 3500;
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
+  console.log("version 0.1")
 });
 

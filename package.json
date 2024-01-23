@@ -23,7 +23,8 @@
     "pdf-lib": "^1.17.1",
     "pdf-parse": "^1.1.1",
     "pdfkit": "^0.14.0",
-    "puppeteer": "^21.6.0",
+    "puppeteer": "^21.7.0",
+    "puppeteer-core": "^21.7.0",
     "sharp": "^0.33.1",
     "socket.io": "^4.7.2"
   }

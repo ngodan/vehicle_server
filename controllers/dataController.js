@@ -210,7 +210,6 @@ exports.getAllDataReport = async (req, res) => {
     const { fordCardID, fullName, cdsid, department, startDateTime, endDateTime, status, check } = req.body;
     globalDataReport = []
     let fordCard = []
-    console.log(req.body)
     const resultArray = await searchAndGetCardIdByColumns(fullName, cdsid, department);
     if (resultArray.length > 0) fordCard = resultArray;
     if (fordCardID) {
@@ -264,7 +263,6 @@ exports.getAllDataReport = async (req, res) => {
         ],
       });
     }
-    console.log(JSON.stringify(query))
     let result = await Data.find(query).sort({ DateTimeOut: -1, DateTimeIn: -1 });
     if ((cdsid || fullName) && resultArray.length == 0) {
       result = []
@@ -331,7 +329,6 @@ exports.createData = async (req, res) => { // TEST
   const specificDateHCM = specificDateUtc.tz('Asia/Ho_Chi_Minh');
   
   const datetime = new Date((specificDateHCM.format().replace("+07:00","")));
-  console.log(datetime)
   try {
     const newData = new Data({
       LaneIn: getRndInteger(1, 7),
@@ -347,7 +344,7 @@ exports.createData = async (req, res) => { // TEST
       Status: null,
       ImageIn: `${getRndInteger(1, 21)}`,
       ImageOut: null,
-      Check: 0,
+      Check: 2,
       Rootcause: '',
       Action: '',
       TypeOfError: '',
@@ -400,7 +397,7 @@ exports.setNote = async (req, res) => {
 };
 exports.sendMail = async (req, res) => {
   try {
-    const result = await generatePDF(3, globalDataReport);
+    const result = await generatePDF(1, globalDataReport);
     //const result = await generatePDF(1);
     if (result == "sent") {
       res.status(200).json({ message: 'Gửi mail thành công', data: result });
