@@ -225,7 +225,7 @@ exports.getAllDataReport = async (req, res) => {
       query.Status = "OK";
     }
     //Query Check
-    if (check != 0) query.Check = Number(check)
+    if (check != 0) query.Check = `${Number(check)}`
 
     //Query Fordcard ID
     if (fordCard.length > 0) {
@@ -344,7 +344,7 @@ exports.createData = async (req, res) => { // TEST
       Status: null,
       ImageIn: `${getRndInteger(1, 21)}`,
       ImageOut: null,
-      Check: 2,
+      Check: "2",
       Rootcause: '',
       Action: '',
       TypeOfError: '',
@@ -364,7 +364,7 @@ exports.setStatusData = async (req, res) => {
     if (pkid != null && pkid != '') {
       const setStatusData = await Data.findByIdAndUpdate(
         { _id: pkid },
-        { Status: 'OK', Check: 1 },
+        { Status: 'OK', Check: "1" },
         { new: true }
       );
     }
@@ -417,7 +417,7 @@ exports.setEditData = async (req, res) => {
     if (pkid != null && pkid != '') {
       const setStatusData = await Data.findByIdAndUpdate(
         { _id: pkid },
-        { Check: 2 },
+        { Check: "2" },
         { new: true }
       );
     }
@@ -435,7 +435,6 @@ exports.getDepartmentData = async (req, res) => {
     res.status(500).json({ message: 'Thất bại', error: error });
   }
 };
-
 async function filterUniqueValues(columnName) {
   const uniqueValues = new Set();
 
@@ -488,8 +487,6 @@ function searchAndGetCardIdByColumns(fullName, cdsid, department) {
     }
   });
 }
-
-
 function searchCSVByColumnIndex(searchTerm, columnIndex) {
   return new Promise((resolve, reject) => {
     const data = [];

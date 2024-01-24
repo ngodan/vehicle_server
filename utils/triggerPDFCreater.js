@@ -35,7 +35,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // Hàm để tạo và gửi email
-async function sendEmailWithPDF(pdfBuffer,titleData) {
+async function sendEmailWithPDF(pdfBuffer, titleData) {
     const mailOptions = {
         from: 'fvlsafety@gmail.com',
         //to: ['nthien@ford.com',"nminh1@ford.com","nnguyet1@ford.com","vhung1@ford.com","securi25@ford.com"],
@@ -66,22 +66,39 @@ async function getData(number) {
         endDateTime = new Date(specificDate.clone().startOf('day').hour(5));
     }
     query.$or = [
-        { Check: 1 }
-        , { Check: 2 }
+        { Check: "1" }
+        , { Check: "2" }
     ];
     if (!query.$and) {
         query.$and = [];
     }
     query.$and.push({
-        $and: [
+        $or: [
             {
                 DateTimeIn: {
                     $gte: startDateTime,
                     $lte: endDateTime,
                     $ne: null
                 },
+            },
+            {
+                $and:
+                    [
+                        {
+                            DateTimeOut: {
+                                $gte: startDateTime,
+                                $lte: endDateTime,
+                                $ne: null
+                            },
+                        },
+                        {
+                            DateTimeIn:null
+                        }
+                    ]
+
             }
         ],
+
     });
     const aggregationPipeline = [
         { $match: query },
@@ -658,7 +675,7 @@ async function generatePDF(number, dataInput) {
                 top: '32px',
             },
         });
-        await sendEmailWithPDF(pdfBuffer,titleData);
+        await sendEmailWithPDF(pdfBuffer, titleData);
         await browser.close();
         return "sent"
     }
@@ -790,7 +807,7 @@ async function generateTableBody(data, number) {
           </td>
             
           <td style="width: 12%">
-            ${(value._doc.Check == 1) ? "Đã kiểm" : "Hậu kiểm"}
+            ${(Number(value._doc.Check) == 1) ? "Đã kiểm" : "Hậu kiểm"}
             <!-- Action -->
          </td>
             <td style="width: 7%">${(value._doc.TypeOfError) ? value._doc.TypeOfError : ""}</td>
@@ -939,7 +956,7 @@ async function generateTableBody(data, number) {
               
             </td>
             <td style="width: 12%">
-                    ${(value.Check == 1) ? "Đã kiểm" : "Hậu kiểm"}
+                    ${(Number(value.Check) == 1) ? "Đã kiểm" : "Hậu kiểm"}
                     <!-- Action -->
                 </td>
                 <td style="width: 7%">${(value.TypeOfError) ? value.TypeOfError : ""}</td>

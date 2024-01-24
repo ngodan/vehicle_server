@@ -24,7 +24,7 @@ const dataSchema = new mongoose.Schema({
   Status: String,
   ImageIn: String,
   ImageOut: String,
-  Check: Number,
+  Check: String,
   Rootcause: String,
   Action: String,
   TypeOfError: String,
