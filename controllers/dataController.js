@@ -398,7 +398,7 @@ exports.setNote = async (req, res) => {
 exports.sendMail = async (req, res) => {
   try {
     //const result = await generatePDF(3, globalDataReport);
-    const result = await generatePDF(1);
+    const result = await generatePDF(2);
     if (result == "sent") {
       res.status(200).json({ message: 'Gửi mail thành công', data: result });
     }
