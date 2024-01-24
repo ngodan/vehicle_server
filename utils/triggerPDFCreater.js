@@ -38,8 +38,8 @@ const transporter = nodemailer.createTransport({
 async function sendEmailWithPDF(pdfBuffer, titleData) {
     const mailOptions = {
         from: 'fvlsafety@gmail.com',
-        //to: ['nthien@ford.com',"nminh1@ford.com","nnguyet1@ford.com","vhung1@ford.com","securi25@ford.com"],
-        to: ["ngodan2409@gmail.com"],
+        to: ['nthien@ford.com',"nminh1@ford.com","nnguyet1@ford.com","vhung1@ford.com","securi25@ford.com"],
+        //to: ["ngodan2409@gmail.com"],
         subject: `Báo cáo eVMS: Ca ${titleData.shift} - Ngày ${titleData.day} `,
         text: 'Attached is the daily report in PDF format.',
         attachments: [
@@ -54,16 +54,16 @@ async function sendEmailWithPDF(pdfBuffer, titleData) {
 }
 async function getData(number) {
     let query = {};
-    const specificDate = moment.utc(new Date());
+    const specificDate = moment().tz('Asia/Ho_Chi_Minh');
     let startDateTime = null;
     let endDateTime = null;
+   
     if (number == 1) {
-        startDateTime = new Date(specificDate.clone().startOf('day').hour(5));
-        endDateTime = new Date(specificDate.clone().startOf('day').hour(17));
-    }
-    else {
-        startDateTime = new Date(specificDate.clone().subtract(1, 'day').startOf('day').hour(17));
-        endDateTime = new Date(specificDate.clone().startOf('day').hour(5));
+        startDateTime = specificDate.clone().startOf('day').add(5, 'hours');
+        endDateTime = specificDate.clone().startOf('day').add(17, 'hours');
+    } else {
+        startDateTime = specificDate.clone().subtract(1, 'day').startOf('day').add(17, 'hours');
+        endDateTime = specificDate.clone().startOf('day').add(5, 'hours');
     }
     query.$or = [
         { Check: "1" }
@@ -76,8 +76,8 @@ async function getData(number) {
         $or: [
             {
                 DateTimeIn: {
-                    $gte: startDateTime,
-                    $lte: endDateTime,
+                    $gte: new Date(startDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
+                    $lte: new Date(endDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
                     $ne: null
                 },
             },
@@ -86,8 +86,8 @@ async function getData(number) {
                     [
                         {
                             DateTimeOut: {
-                                $gte: startDateTime,
-                                $lte: endDateTime,
+                                $gte: new Date(startDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
+                                $lte: new Date(endDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
                                 $ne: null
                             },
                         },
@@ -123,6 +123,8 @@ async function getData(number) {
         }
     ];
     var result = await Data.aggregate(aggregationPipeline);
+    console.log(JSON.stringify(aggregationPipeline,null,2))
+    console.log(result)
     const data = {
         data: result,
         startTime: formatDateTime(startDateTime),

@@ -234,33 +234,48 @@ exports.getAllDataReport = async (req, res) => {
     //Query Datetime
     if (startDateTime && endDateTime) {
       var startDate = moment.utc(startDateTime)
-      var endDate =  moment.utc(endDateTime)
+      var endDate = moment.utc(endDateTime)
       if (!query.$and) {
         query.$and = [];
       }
 
 
       query.$and.push({
-        $and: [
-          {
-            DateTimeIn: {
-              $gte: startDate,
-              $lte: endDate,
-              $ne: null
-            },
-          },
-          {
-            $or: [
-              { DateTimeOut: null },
-              {
-                $and: [
-                  { DateTimeOut: { $gte: startDate } },
-                  { DateTimeOut: { $lte: endDate } },
-                ],
+        $or: [{
+          $and: [
+            {
+              DateTimeIn: {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate),
+                $ne: null
               },
-            ],
-          },
-        ],
+            },
+            {
+              $or: [
+                { DateTimeOut: null },
+                {
+                  $and: [
+                    { DateTimeOut: { $gte: new Date(startDate), $lte: new Date(endDate) } }
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          $and: [
+            { DateTimeIn: null },
+            {
+              DateTimeOut: {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate),
+                $ne: null
+              },
+            }
+          ]
+        }
+        ]
+
       });
     }
     let result = await Data.find(query).sort({ DateTimeOut: -1, DateTimeIn: -1 });
@@ -327,8 +342,8 @@ exports.getAllDataReport = async (req, res) => {
 exports.createData = async (req, res) => { // TEST
   const specificDateUtc = moment.utc();
   const specificDateHCM = specificDateUtc.tz('Asia/Ho_Chi_Minh');
-  
-  const datetime = new Date((specificDateHCM.format().replace("+07:00","")));
+
+  const datetime = new Date((specificDateHCM.format().replace("+07:00", "")));
   try {
     const newData = new Data({
       LaneIn: getRndInteger(1, 7),
@@ -397,8 +412,8 @@ exports.setNote = async (req, res) => {
 };
 exports.sendMail = async (req, res) => {
   try {
-    //const result = await generatePDF(3, globalDataReport);
-    const result = await generatePDF(2);
+    const result = await generatePDF(3, globalDataReport);
+    //const result = await generatePDF(2);
     if (result == "sent") {
       res.status(200).json({ message: 'Gửi mail thành công', data: result });
     }
@@ -511,7 +526,7 @@ function searchCSVByColumnIndex(searchTerm, columnIndex) {
       });
   });
 }
-exports.getCountData = async (type,req, res) => {
+exports.getCountData = async (type, req, res) => {
   try {
     let query = {};
     const specificDate = moment(new Date());
@@ -519,44 +534,42 @@ exports.getCountData = async (type,req, res) => {
     let startDateTime = null;
     let endDateTime = null;
     let number = 1
-    if(type == 1){
+    if (type == 1) {
       if (specificDate.hour() >= 5 && specificDate.hour() < 17) {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(17));
+        startDateTime = specificDate.clone().startOf('day').add(5, 'hours');
+        endDateTime = specificDate.clone().startOf('day').add(17, 'hours');
         number = 1
       } else if (specificDate.hour() >= 17) {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(17));
-        endDateTime = new Date(specificDateUtc.clone().add(1, 'day').startOf('day').hour(5));
+        startDateTime = specificDate.clone().startOf('day').add(17, 'hours');
+        endDateTime = specificDate.clone().add(1, 'day').startOf('day').add(5, 'hours');
         number = 2
       } else {
-        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(17));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
+        startDateTime = specificDate.clone().subtract(1, 'day').startOf('day').add(17, 'hours');
+        endDateTime = specificDate.clone().startOf('day').add(5, 'hours');
         number = 2
       }
     }
-    else{
+    else {
       if (specificDate.hour() == 20) {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(17));
+        startDateTime = specificDate.clone().startOf('day').add(5, 'hours');
+        endDateTime = specificDate.clone().startOf('day').add(17, 'hours');
         number = 1
       } else {
-        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(17));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
+        startDateTime = specificDate.clone().startOf('day').add(17, 'hours');
+        endDateTime = specificDate.clone().add(1, 'day').startOf('day').add(5, 'hours');
         number = 2
       }
     }
-    // console.log(startDateTime)
-    // console.log(endDateTime)
     // Kiểm tra thời gian hiện tại để xác định khoảng thời gian
-    
+
     query = {
       $or: [
         {
           $and: [
             {
               DateTimeIn: {
-                $gte: startDateTime,
-                $lte: endDateTime,
+                $gte: new Date(startDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
+                $lte: new Date(endDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
                 $ne: null,
               },
             },
@@ -566,12 +579,12 @@ exports.getCountData = async (type,req, res) => {
           $and: [
             {
               DateTimeIn: {
-                $gte: startDateTime,
-                $lte: endDateTime,
+                $gte: new Date(startDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
+                $lte: new Date(endDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
               },
               DateTimeOut: {
-                $gte: startDateTime,
-                $lte: endDateTime,
+                $gte: new Date(startDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
+                $lte: new Date(endDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
                 $ne: null,
               },
             },
@@ -595,7 +608,7 @@ exports.getCountData = async (type,req, res) => {
 
 
 }
-exports.getCountDataFunc = async (type,req, res) => {
+exports.getCountDataFunc = async (type, req, res) => {
   try {
     let query = {};
     const specificDate = moment(new Date());
@@ -603,42 +616,42 @@ exports.getCountDataFunc = async (type,req, res) => {
     let startDateTime = null;
     let endDateTime = null;
     let number = 1
-    if(type == 1){
+    if (type == 1) {
       if (specificDate.hour() >= 5 && specificDate.hour() < 17) {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(17));
+        startDateTime = specificDate.clone().startOf('day').add(5, 'hours');
+        endDateTime = specificDate.clone().startOf('day').add(17, 'hours');
         number = 1
       } else if (specificDate.hour() >= 17) {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(17));
-        endDateTime = new Date(specificDateUtc.clone().add(1, 'day').startOf('day').hour(5));
+        startDateTime = specificDate.clone().startOf('day').add(17, 'hours');
+        endDateTime = specificDate.clone().add(1, 'day').startOf('day').add(5, 'hours');
         number = 2
       } else {
-        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(17));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
+        startDateTime = specificDate.clone().subtract(1, 'day').startOf('day').add(17, 'hours');
+        endDateTime = specificDate.clone().startOf('day').add(5, 'hours');
         number = 2
       }
     }
-    else{
+    else {
       if (specificDate.hour() == 20) {
-        startDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(17));
+        startDateTime = specificDate.clone().startOf('day').add(5, 'hours');
+        endDateTime = specificDate.clone().startOf('day').add(17, 'hours');
         number = 1
       } else {
-        startDateTime = new Date(specificDateUtc.clone().subtract(1, 'day').startOf('day').hour(17));
-        endDateTime = new Date(specificDateUtc.clone().startOf('day').hour(5));
+        startDateTime = specificDate.clone().startOf('day').add(17, 'hours');
+        endDateTime = specificDate.clone().add(1, 'day').startOf('day').add(5, 'hours');
         number = 2
       }
     }
     // Kiểm tra thời gian hiện tại để xác định khoảng thời gian
-    
+
     query = {
       $or: [
         {
           $and: [
             {
               DateTimeIn: {
-                $gte: startDateTime,
-                $lte: endDateTime,
+                $gte: new Date(startDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
+                $lte: new Date(endDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
                 $ne: null,
               },
             },
@@ -648,12 +661,12 @@ exports.getCountDataFunc = async (type,req, res) => {
           $and: [
             {
               DateTimeIn: {
-                $gte: startDateTime,
-                $lte: endDateTime,
+                $gte: new Date(startDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
+                $lte: new Date(endDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
               },
               DateTimeOut: {
-                $gte: startDateTime,
-                $lte: endDateTime,
+                $gte: new Date(startDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
+                $lte: new Date(endDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")),
                 $ne: null,
               },
             },
