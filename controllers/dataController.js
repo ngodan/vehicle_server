@@ -412,8 +412,8 @@ exports.setNote = async (req, res) => {
 };
 exports.sendMail = async (req, res) => {
   try {
-    const result = await generatePDF(3, globalDataReport);
-    //const result = await generatePDF(2);
+    //const result = await generatePDF(3, globalDataReport);
+    const result = await generatePDF(2);
     if (result == "sent") {
       res.status(200).json({ message: 'Gửi mail thành công', data: result });
     }
@@ -555,11 +555,12 @@ exports.getCountData = async (type, req, res) => {
         endDateTime = specificDate.clone().startOf('day').add(17, 'hours');
         number = 1
       } else {
-        startDateTime = specificDate.clone().startOf('day').add(17, 'hours');
-        endDateTime = specificDate.clone().add(1, 'day').startOf('day').add(5, 'hours');
+        startDateTime = specificDate.clone().subtract(1, 'day').startOf('day').add(17, 'hours');
+        endDateTime = specificDate.clone().startOf('day').add(5, 'hours');
         number = 2
       }
     }
+   
     // Kiểm tra thời gian hiện tại để xác định khoảng thời gian
 
     query = {
@@ -637,11 +638,13 @@ exports.getCountDataFunc = async (type, req, res) => {
         endDateTime = specificDate.clone().startOf('day').add(17, 'hours');
         number = 1
       } else {
-        startDateTime = specificDate.clone().startOf('day').add(17, 'hours');
-        endDateTime = specificDate.clone().add(1, 'day').startOf('day').add(5, 'hours');
+        startDateTime = specificDate.clone().subtract(1, 'day').startOf('day').add(17, 'hours');
+        endDateTime = specificDate.clone().startOf('day').add(5, 'hours');
         number = 2
       }
     }
+    //console.log(new Date(startDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")))
+    //console.log(new Date(endDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")))
     // Kiểm tra thời gian hiện tại để xác định khoảng thời gian
 
     query = {
@@ -675,7 +678,7 @@ exports.getCountDataFunc = async (type, req, res) => {
       ],
     };
     const result = await Data.find(query);
-
+    console.log(result)
     var data = {
       countVehicleWithNullOut: result.filter(item => item.DateTimeIn != null).length,
       countVehicleWithNotNullOut: result.filter(item => item.DateTimeOut != null).length,

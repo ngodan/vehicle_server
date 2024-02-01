@@ -38,8 +38,8 @@ const transporter = nodemailer.createTransport({
 async function sendEmailWithPDF(pdfBuffer, titleData) {
     const mailOptions = {
         from: 'fvlsafety@gmail.com',
-        to: ['nthien@ford.com',"nminh1@ford.com","nnguyet1@ford.com","vhung1@ford.com","securi25@ford.com"],
-        //to: ["ngodan2409@gmail.com"],
+        //to: ['nthien@ford.com',"nminh1@ford.com","nnguyet1@ford.com","vhung1@ford.com","securi25@ford.com"],
+        to: ["ngodan2409@gmail.com"],
         subject: `Báo cáo eVMS: Ca ${titleData.shift} - Ngày ${titleData.day} `,
         text: 'Attached is the daily report in PDF format.',
         attachments: [
@@ -123,12 +123,12 @@ async function getData(number) {
         }
     ];
     var result = await Data.aggregate(aggregationPipeline);
-    console.log(JSON.stringify(aggregationPipeline,null,2))
-    console.log(result)
+    console.log(new Date(startDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")))
+    console.log(new Date(endDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")))
     const data = {
         data: result,
-        startTime: formatDateTime(startDateTime),
-        endTime: formatDateTime(endDateTime)
+        startTime:formatDateTime(new Date(startDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]"))),
+        endTime: formatDateTime(new Date(endDateTime.tz('Asia/Ho_Chi_Minh').format("YYYY-MM-DDTHH:00:00.000[Z]")))
     }
     return data
 }
@@ -394,7 +394,7 @@ async function generatePDF(number, dataInput) {
                             
             `
             titleData.shift = dataVehicle.shift
-            titleData.day = data.startTime.split(" ")[1];
+            titleData.day = (data.startTime.split(" ").length > 2) ? data.startTime.split(" ")[1] : "";
             var html = await generateTableBody(data.data, 1)
 
             htmlContent += html
